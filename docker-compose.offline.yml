@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  one-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.offline
+    container_name: one-api-offline
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/data
+      - ./logs:/logs
+    environment:
+      # tiktoken缓存配置（已内置在镜像中）
+      - TIKTOKEN_CACHE_DIR=/tiktoken_cache
+      - DATA_GYM_CACHE_DIR=/tiktoken_cache
+      
+      # 基础配置
+      - TZ=Asia/Shanghai
+      - MEMORY_CACHE_ENABLED=true
+      - LOG_LEVEL=info
+      
+      # 数据库配置
+      - SQL_DSN=sqlite:file:/data/one-api.db?cache=shared
+      
+      # 服务器配置
+      - SERVER_PORT=3000
+      - FRONTEND_BASE_URL=http://localhost:3000
+      
+      # 会话配置
+      - SESSION_SECRET=random_session_secret_change_me
+      
+      # 可选：强制离线模式（阻止任何外网连接）
+      # - OFFLINE_MODE=true
+      
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # 限制资源使用
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+    
+    # 网络配置（可选：完全隔离）
+    # networks:
+    #   - isolated
+      
+# 可选：创建隔离网络，阻止容器访问外网
+# networks:
+#   isolated:
+#     driver: bridge
+#     internal: true 

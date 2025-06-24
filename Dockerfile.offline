@@ -1,0 +1,113 @@
+# One API 离线版本 Dockerfile
+# 此版本在构建时预下载所有tiktoken缓存，生成完全离线的镜像
+
+FROM --platform=$BUILDPLATFORM node:16 AS builder
+
+WORKDIR /web
+COPY ./VERSION .
+COPY ./web .
+
+# 并行构建所有前端主题
+RUN npm install --prefix /web/default & \
+    npm install --prefix /web/berry & \
+    npm install --prefix /web/air & \
+    wait
+
+RUN DISABLE_ESLINT_PLUGIN='true' REACT_APP_VERSION=$(cat ./VERSION) npm run build --prefix /web/default & \
+    DISABLE_ESLINT_PLUGIN='true' REACT_APP_VERSION=$(cat ./VERSION) npm run build --prefix /web/berry & \
+    DISABLE_ESLINT_PLUGIN='true' REACT_APP_VERSION=$(cat ./VERSION) npm run build --prefix /web/air & \
+    wait
+
+FROM golang:alpine AS builder2
+
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    sqlite-dev \
+    build-base \
+    curl \
+    wget
+
+ENV GO111MODULE=on \
+    CGO_ENABLED=1 \
+    GOOS=linux
+
+WORKDIR /build
+
+# 复制Go模块文件并下载依赖
+ADD go.mod go.sum ./
+RUN go mod download
+
+# 复制所有源代码
+COPY . .
+COPY --from=builder /web/build ./web/build
+
+# 设置tiktoken缓存目录
+ENV TIKTOKEN_CACHE_DIR=/build/tiktoken_cache
+ENV DATA_GYM_CACHE_DIR=/build/tiktoken_cache
+RUN mkdir -p /build/tiktoken_cache
+
+# 直接下载tiktoken缓存文件
+RUN echo "🌐 下载 tiktoken 缓存文件..." && \
+    cd /build/tiktoken_cache && \
+    BASE_URL="https://openaipublic.blob.core.windows.net/encodings" && \
+    FILES="r50k_base.tiktoken p50k_base.tiktoken cl100k_base.tiktoken o200k_base.tiktoken" && \
+    SUCCESS_COUNT=0 && \
+    for file in $FILES; do \
+        echo "📥 下载 $file ..."; \
+        if curl -L -o "$file" "$BASE_URL/$file" 2>/dev/null; then \
+            if [ -s "$file" ]; then \
+                echo "✅ $file 下载成功 ($(stat -f%z "$file" 2>/dev/null || stat -c%s "$file") bytes)"; \
+                SUCCESS_COUNT=$((SUCCESS_COUNT + 1)); \
+            else \
+                echo "❌ $file 下载失败（文件为空）"; \
+                rm -f "$file"; \
+            fi; \
+        else \
+            echo "❌ $file 下载失败"; \
+        fi; \
+    done && \
+    echo "📊 总共下载成功 $SUCCESS_COUNT 个文件" && \
+    echo "💾 缓存目录大小: $(du -sh . | cut -f1)" && \
+    ls -la
+
+# 编译主程序
+RUN echo "🔨 编译 One API..." && \
+    go build -trimpath -ldflags "-s -w -X 'github.com/songquanpeng/one-api/common.Version=$(cat VERSION)' -linkmode external -extldflags '-static'" -o one-api
+
+FROM alpine:latest
+
+# 安装必要的系统包
+RUN apk add --no-cache ca-certificates tzdata wget
+
+# 复制编译好的程序
+COPY --from=builder2 /build/one-api /
+
+# 复制tiktoken缓存文件
+COPY --from=builder2 /build/tiktoken_cache /tiktoken_cache
+
+# 设置tiktoken缓存环境变量
+ENV TIKTOKEN_CACHE_DIR=/tiktoken_cache
+ENV DATA_GYM_CACHE_DIR=/tiktoken_cache
+
+# 设置其他离线环境变量
+ENV MEMORY_CACHE_ENABLED=true
+ENV TZ=Asia/Shanghai
+
+# 创建数据目录
+RUN mkdir -p /data
+
+# 验证tiktoken缓存文件
+RUN echo "🔍 验证tiktoken缓存文件..." && \
+    ls -la /tiktoken_cache/ && \
+    echo "💾 总缓存大小: $(du -sh /tiktoken_cache | cut -f1)"
+
+# 健康检查
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost:3000/api/status || exit 1
+
+EXPOSE 3000
+WORKDIR /data
+
+# 启动命令
+ENTRYPOINT ["/one-api"] 
