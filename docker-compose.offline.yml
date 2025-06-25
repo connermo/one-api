@@ -21,7 +21,7 @@ services:
       - LOG_LEVEL=info
       
       # 数据库配置
-      - SQL_DSN=sqlite:file:/data/one-api.db?cache=shared
+      - SQL_DSN=sqlite:/data/one-api.db
       
       # 服务器配置
       - SERVER_PORT=3000
