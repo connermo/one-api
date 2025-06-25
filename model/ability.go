@@ -7,8 +7,8 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/songquanpeng/one-api/common"
-	"github.com/songquanpeng/one-api/common/utils"
+	"github.com/connermo/one-api/common"
+	"github.com/connermo/one-api/common/utils"
 )
 
 type Ability struct {

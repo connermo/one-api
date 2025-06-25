@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/songquanpeng/one-api/common/env"
+	"github.com/connermo/one-api/common/env"
 
 	"github.com/google/uuid"
 )

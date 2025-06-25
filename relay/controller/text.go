@@ -9,17 +9,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/songquanpeng/one-api/common/config"
-	"github.com/songquanpeng/one-api/common/logger"
-	"github.com/songquanpeng/one-api/relay"
-	"github.com/songquanpeng/one-api/relay/adaptor"
-	"github.com/songquanpeng/one-api/relay/adaptor/openai"
-	"github.com/songquanpeng/one-api/relay/apitype"
-	"github.com/songquanpeng/one-api/relay/billing"
-	billingratio "github.com/songquanpeng/one-api/relay/billing/ratio"
-	"github.com/songquanpeng/one-api/relay/channeltype"
-	"github.com/songquanpeng/one-api/relay/meta"
-	"github.com/songquanpeng/one-api/relay/model"
+	"github.com/connermo/one-api/common/config"
+	"github.com/connermo/one-api/common/logger"
+	"github.com/connermo/one-api/relay"
+	"github.com/connermo/one-api/relay/adaptor"
+	"github.com/connermo/one-api/relay/adaptor/openai"
+	"github.com/connermo/one-api/relay/apitype"
+	"github.com/connermo/one-api/relay/billing"
+	billingratio "github.com/connermo/one-api/relay/billing/ratio"
+	"github.com/connermo/one-api/relay/channeltype"
+	"github.com/connermo/one-api/relay/meta"
+	"github.com/connermo/one-api/relay/model"
 )
 
 func RelayTextHelper(c *gin.Context) *model.ErrorWithStatusCode {

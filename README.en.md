@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/songquanpeng/one-api"><img src="https://raw.githubusercontent.com/songquanpeng/one-api/main/web/default/public/logo.png" width="150" height="150" alt="one-api logo"></a>
+  <a href="https://github.com/connermo/one-api"><img src="https://raw.githubusercontent.com/connermo/one-api/main/web/default/public/logo.png" width="150" height="150" alt="one-api logo"></a>
 </p>
 
 <div align="center">
@@ -15,20 +15,20 @@ _✨ Access all LLM through the standard OpenAI API format, easy to deploy & use
 </div>
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/songquanpeng/one-api/main/LICENSE">
-    <img src="https://img.shields.io/github/license/songquanpeng/one-api?color=brightgreen" alt="license">
+  <a href="https://raw.githubusercontent.com/connermo/one-api/main/LICENSE">
+    <img src="https://img.shields.io/github/license/connermo/one-api?color=brightgreen" alt="license">
   </a>
-  <a href="https://github.com/songquanpeng/one-api/releases/latest">
-    <img src="https://img.shields.io/github/v/release/songquanpeng/one-api?color=brightgreen&include_prereleases" alt="release">
+  <a href="https://github.com/connermo/one-api/releases/latest">
+    <img src="https://img.shields.io/github/v/release/connermo/one-api?color=brightgreen&include_prereleases" alt="release">
   </a>
   <a href="https://hub.docker.com/repository/docker/justsong/one-api">
     <img src="https://img.shields.io/docker/pulls/justsong/one-api?color=brightgreen" alt="docker pull">
   </a>
-  <a href="https://github.com/songquanpeng/one-api/releases/latest">
-    <img src="https://img.shields.io/github/downloads/songquanpeng/one-api/total?color=brightgreen&include_prereleases" alt="release">
+  <a href="https://github.com/connermo/one-api/releases/latest">
+    <img src="https://img.shields.io/github/downloads/connermo/one-api/total?color=brightgreen&include_prereleases" alt="release">
   </a>
-  <a href="https://goreportcard.com/report/github.com/songquanpeng/one-api">
-    <img src="https://goreportcard.com/badge/github.com/songquanpeng/one-api" alt="GoReportCard">
+  <a href="https://goreportcard.com/report/github.com/connermo/one-api">
+    <img src="https://goreportcard.com/badge/github.com/connermo/one-api" alt="GoReportCard">
   </a>
 </p>
 
@@ -37,7 +37,7 @@ _✨ Access all LLM through the standard OpenAI API format, easy to deploy & use
   ·
   <a href="#usage">Usage</a>
   ·
-  <a href="https://github.com/songquanpeng/one-api/issues">Feedback</a>
+  <a href="https://github.com/connermo/one-api/issues">Feedback</a>
   ·
   <a href="#screenshots">Screenshots</a>
   ·
@@ -129,9 +129,9 @@ sudo service nginx restart
 The initial account username is `root` and password is `123456`.
 
 ### Manual Deployment
-1. Download the executable file from [GitHub Releases](https://github.com/songquanpeng/one-api/releases/latest) or compile from source:
+1. Download the executable file from [GitHub Releases](https://github.com/connermo/one-api/releases/latest) or compile from source:
    ```shell
-   git clone https://github.com/songquanpeng/one-api.git
+   git clone https://github.com/connermo/one-api.git
 
    # Build the frontend
    cd one-api/web/default
@@ -164,9 +164,9 @@ For more detailed deployment tutorials, please refer to [this page](https://iama
 Please refer to the [environment variables](#environment-variables) section for details on using environment variables.
 
 ### Deployment on Control Panels (e.g., Baota)
-Refer to [#175](https://github.com/songquanpeng/one-api/issues/175) for detailed instructions.
+Refer to [#175](https://github.com/connermo/one-api/issues/175) for detailed instructions.
 
-If you encounter a blank page after deployment, refer to [#97](https://github.com/songquanpeng/one-api/issues/97) for possible solutions.
+If you encounter a blank page after deployment, refer to [#97](https://github.com/connermo/one-api/issues/97) for possible solutions.
 
 ### Deployment on Third-Party Platforms
 <details>

@@ -16,14 +16,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 
-	"github.com/songquanpeng/one-api/common"
-	"github.com/songquanpeng/one-api/common/helper"
-	"github.com/songquanpeng/one-api/common/logger"
-	"github.com/songquanpeng/one-api/common/random"
-	"github.com/songquanpeng/one-api/relay/adaptor/openai"
-	"github.com/songquanpeng/one-api/relay/constant"
-	"github.com/songquanpeng/one-api/relay/meta"
-	"github.com/songquanpeng/one-api/relay/model"
+	"github.com/connermo/one-api/common"
+	"github.com/connermo/one-api/common/helper"
+	"github.com/connermo/one-api/common/logger"
+	"github.com/connermo/one-api/common/random"
+	"github.com/connermo/one-api/relay/adaptor/openai"
+	"github.com/connermo/one-api/relay/constant"
+	"github.com/connermo/one-api/relay/meta"
+	"github.com/connermo/one-api/relay/model"
 )
 
 // https://console.xfyun.cn/services/cbm

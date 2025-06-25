@@ -3,9 +3,9 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/songquanpeng/one-api/common/config"
-	"github.com/songquanpeng/one-api/common/logger"
-	"github.com/songquanpeng/one-api/relay/model"
+	"github.com/connermo/one-api/common/config"
+	"github.com/connermo/one-api/common/logger"
+	"github.com/connermo/one-api/relay/model"
 	"io"
 	"net/http"
 	"strconv"

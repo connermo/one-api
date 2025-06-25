@@ -6,11 +6,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common/logger"
-	"github.com/songquanpeng/one-api/relay"
-	"github.com/songquanpeng/one-api/relay/adaptor/openai"
-	"github.com/songquanpeng/one-api/relay/meta"
-	relaymodel "github.com/songquanpeng/one-api/relay/model"
+	"github.com/connermo/one-api/common/logger"
+	"github.com/connermo/one-api/relay"
+	"github.com/connermo/one-api/relay/adaptor/openai"
+	"github.com/connermo/one-api/relay/meta"
+	relaymodel "github.com/connermo/one-api/relay/model"
 )
 
 // RelayProxyHelper is a helper function to proxy the request to the upstream service

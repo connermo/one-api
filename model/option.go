@@ -1,9 +1,9 @@
 package model
 
 import (
-	"github.com/songquanpeng/one-api/common/config"
-	"github.com/songquanpeng/one-api/common/logger"
-	billingratio "github.com/songquanpeng/one-api/relay/billing/ratio"
+	"github.com/connermo/one-api/common/config"
+	"github.com/connermo/one-api/common/logger"
+	billingratio "github.com/connermo/one-api/relay/billing/ratio"
 	"strconv"
 	"strings"
 	"time"

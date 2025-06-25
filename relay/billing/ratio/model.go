@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/songquanpeng/one-api/common/logger"
+	"github.com/connermo/one-api/common/logger"
 )
 
 const (

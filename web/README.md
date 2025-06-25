@@ -22,7 +22,7 @@
 默认主题，由 [JustSong](https://github.com/songquanpeng) 开发。
 
 预览：
-|![image](https://github.com/songquanpeng/one-api/assets/39998050/ccfbc668-3a7f-4bc1-87da-7eacfd7bf371)|![image](https://github.com/songquanpeng/one-api/assets/39998050/a63ed547-44b9-45db-b43a-ecea07d60840)|
+|![image](https://github.com/connermo/one-api/assets/39998050/ccfbc668-3a7f-4bc1-87da-7eacfd7bf371)|![image](https://github.com/connermo/one-api/assets/39998050/a63ed547-44b9-45db-b43a-ecea07d60840)|
 |:---:|:---:|
 
 ### 主题：berry
@@ -32,9 +32,9 @@
 预览：
 |||
 |:---:|:---:|
-|![image](https://github.com/songquanpeng/one-api/assets/42402987/36aff5c6-c5ff-4a90-8e3d-33d5cff34cbf)|![image](https://github.com/songquanpeng/one-api/assets/42402987/9ac63b36-5140-4064-8fad-fc9d25821509)|
-|![image](https://github.com/songquanpeng/one-api/assets/42402987/fb2b1c64-ef24-4027-9b80-0cd9d945a47f)|![image](https://github.com/songquanpeng/one-api/assets/42402987/b6b649ec-2888-4324-8b2d-d5e11554eed6)|
-|![image](https://github.com/songquanpeng/one-api/assets/42402987/6d3b22e0-436b-4e26-8911-bcc993c6a2bd)|![image](https://github.com/songquanpeng/one-api/assets/42402987/eef1e224-7245-44d7-804e-9d1c8fa3f29c)|
+|![image](https://github.com/connermo/one-api/assets/42402987/36aff5c6-c5ff-4a90-8e3d-33d5cff34cbf)|![image](https://github.com/connermo/one-api/assets/42402987/9ac63b36-5140-4064-8fad-fc9d25821509)|
+|![image](https://github.com/connermo/one-api/assets/42402987/fb2b1c64-ef24-4027-9b80-0cd9d945a47f)|![image](https://github.com/connermo/one-api/assets/42402987/b6b649ec-2888-4324-8b2d-d5e11554eed6)|
+|![image](https://github.com/connermo/one-api/assets/42402987/6d3b22e0-436b-4e26-8911-bcc993c6a2bd)|![image](https://github.com/connermo/one-api/assets/42402987/eef1e224-7245-44d7-804e-9d1c8fa3f29c)|
 
 ### 主题：air
 由 [Calon](https://github.com/Calcium-Ion) 开发。
@@ -44,4 +44,4 @@
 
 #### 开发说明
 
-请查看 [web/berry/README.md](https://github.com/songquanpeng/one-api/tree/main/web/berry/README.md)
+请查看 [web/berry/README.md](https://github.com/connermo/one-api/tree/main/web/berry/README.md)

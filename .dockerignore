@@ -1,0 +1,6 @@
+data/
+logs/
+.git/
+*.md
+docker-compose*.yml
+data/mysql/ 

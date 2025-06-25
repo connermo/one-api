@@ -3,7 +3,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/songquanpeng/one-api"><img src="https://raw.githubusercontent.com/songquanpeng/one-api/main/web/default/public/logo.png" width="150" height="150" alt="one-api logo"></a>
+  <a href="https://github.com/connermo/one-api"><img src="https://raw.githubusercontent.com/connermo/one-api/main/web/default/public/logo.png" width="150" height="150" alt="one-api logo"></a>
 </p>
 
 <div align="center">
@@ -15,20 +15,20 @@ _✨ 標準的な OpenAI API フォーマットを通じてすべての LLM に�
 </div>
 
 <p align="center">
-  <a href="https://raw.githubusercontent.com/songquanpeng/one-api/main/LICENSE">
-    <img src="https://img.shields.io/github/license/songquanpeng/one-api?color=brightgreen" alt="license">
+  <a href="https://raw.githubusercontent.com/connermo/one-api/main/LICENSE">
+    <img src="https://img.shields.io/github/license/connermo/one-api?color=brightgreen" alt="license">
   </a>
-  <a href="https://github.com/songquanpeng/one-api/releases/latest">
-    <img src="https://img.shields.io/github/v/release/songquanpeng/one-api?color=brightgreen&include_prereleases" alt="release">
+  <a href="https://github.com/connermo/one-api/releases/latest">
+    <img src="https://img.shields.io/github/v/release/connermo/one-api?color=brightgreen&include_prereleases" alt="release">
   </a>
   <a href="https://hub.docker.com/repository/docker/justsong/one-api">
     <img src="https://img.shields.io/docker/pulls/justsong/one-api?color=brightgreen" alt="docker pull">
   </a>
-  <a href="https://github.com/songquanpeng/one-api/releases/latest">
-    <img src="https://img.shields.io/github/downloads/songquanpeng/one-api/total?color=brightgreen&include_prereleases" alt="release">
+  <a href="https://github.com/connermo/one-api/releases/latest">
+    <img src="https://img.shields.io/github/downloads/connermo/one-api/total?color=brightgreen&include_prereleases" alt="release">
   </a>
-  <a href="https://goreportcard.com/report/github.com/songquanpeng/one-api">
-    <img src="https://goreportcard.com/badge/github.com/songquanpeng/one-api" alt="GoReportCard">
+  <a href="https://goreportcard.com/report/github.com/connermo/one-api">
+    <img src="https://goreportcard.com/badge/github.com/connermo/one-api" alt="GoReportCard">
   </a>
 </p>
 
@@ -37,7 +37,7 @@ _✨ 標準的な OpenAI API フォーマットを通じてすべての LLM に�
   ·
   <a href="#usage">使用方法</a>
   ·
-  <a href="https://github.com/songquanpeng/one-api/issues">フィードバック</a>
+  <a href="https://github.com/connermo/one-api/issues">フィードバック</a>
   ·
   <a href="#screenshots">スクリーンショット</a>
   ·
@@ -130,9 +130,9 @@ sudo service nginx restart
 初期アカウントのユーザー名は `root` で、パスワードは `123456` です。
 
 ### マニュアルデプロイ
-1. [GitHub Releases](https://github.com/songquanpeng/one-api/releases/latest) から実行ファイルをダウンロードする、もしくはソースからコンパイルする:
+1. [GitHub Releases](https://github.com/connermo/one-api/releases/latest) から実行ファイルをダウンロードする、もしくはソースからコンパイルする:
    ```shell
-   git clone https://github.com/songquanpeng/one-api.git
+   git clone https://github.com/connermo/one-api.git
 
    # フロントエンドのビルド
    cd one-api/web/default
@@ -165,9 +165,9 @@ sudo service nginx restart
 Please refer to the [environment variables](#environment-variables) section for details on using environment variables.
 
 ### コントロールパネル（例: Baota）への展開
-詳しい手順は [#175](https://github.com/songquanpeng/one-api/issues/175) を参照してください。
+詳しい手順は [#175](https://github.com/connermo/one-api/issues/175) を参照してください。
 
-配置後に空白のページが表示される場合は、[#97](https://github.com/songquanpeng/one-api/issues/97) を参照してください。
+配置後に空白のページが表示される場合は、[#97](https://github.com/connermo/one-api/issues/97) を参照してください。
 
 ### サードパーティプラットフォームへのデプロイ
 <details>

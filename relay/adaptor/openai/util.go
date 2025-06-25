@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/songquanpeng/one-api/common/logger"
-	"github.com/songquanpeng/one-api/relay/model"
+	"github.com/connermo/one-api/common/logger"
+	"github.com/connermo/one-api/relay/model"
 )
 
 func ErrorWrapper(err error, code string, statusCode int) *model.ErrorWithStatusCode {

@@ -2,9 +2,9 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/songquanpeng/one-api/common/config"
-	"github.com/songquanpeng/one-api/common/ctxkey"
-	"github.com/songquanpeng/one-api/model"
+	"github.com/connermo/one-api/common/config"
+	"github.com/connermo/one-api/common/ctxkey"
+	"github.com/connermo/one-api/model"
 	"net/http"
 	"strconv"
 )
