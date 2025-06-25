@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   one-api:
-    image: connermo/one-api:latest
+    image: connermo/one-api-offline:latest
     container_name: one-api-offline
     restart: unless-stopped
     ports:

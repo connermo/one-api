@@ -73,7 +73,7 @@ RUN echo "🌐 下载 tiktoken 缓存文件..." && \
 
 # 编译主程序
 RUN echo "🔨 编译 One API..." && \
-    go build -trimpath -ldflags "-s -w -X 'github.com/songquanpeng/one-api/common.Version=$(cat VERSION)' -linkmode external -extldflags '-static'" -o one-api
+    go build -trimpath -ldflags "-s -w -X 'github.com/connermo/one-api/common.Version=$(cat VERSION)' -linkmode external -extldflags '-static'" -o one-api
 
 FROM alpine:latest
 
