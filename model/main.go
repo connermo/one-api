@@ -3,6 +3,10 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/connermo/one-api/common"
 	"github.com/connermo/one-api/common/config"
 	"github.com/connermo/one-api/common/env"
@@ -13,9 +17,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"os"
-	"strings"
-	"time"
 )
 
 var DB *gorm.DB
@@ -71,6 +72,9 @@ func chooseDB(envName string) (*gorm.DB, error) {
 	case strings.HasPrefix(dsn, "postgres://"):
 		// Use PostgreSQL
 		return openPostgreSQL(dsn)
+	case strings.HasPrefix(dsn, "sqlite"):
+		// Use SQLite
+		return openSQLiteWithDSN(dsn)
 	case dsn != "":
 		// Use MySQL
 		return openMySQL(dsn)
@@ -103,6 +107,14 @@ func openSQLite() (*gorm.DB, error) {
 	logger.SysLog("SQL_DSN not set, using SQLite as database")
 	common.UsingSQLite = true
 	dsn := fmt.Sprintf("%s?_busy_timeout=%d", common.SQLitePath, common.SQLiteBusyTimeout)
+	return gorm.Open(sqlite.Open(dsn), &gorm.Config{
+		PrepareStmt: true, // precompile SQL
+	})
+}
+
+func openSQLiteWithDSN(dsn string) (*gorm.DB, error) {
+	logger.SysLog("SQL_DSN set, using SQLite as database")
+	common.UsingSQLite = true
 	return gorm.Open(sqlite.Open(dsn), &gorm.Config{
 		PrepareStmt: true, // precompile SQL
 	})
