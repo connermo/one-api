@@ -95,7 +95,7 @@ ENV MEMORY_CACHE_ENABLED=true
 ENV TZ=Asia/Shanghai
 
 # 创建数据目录
-RUN mkdir -p /data
+RUN mkdir -p /data && chmod 755 /data
 
 # 验证tiktoken缓存文件
 RUN echo "🔍 验证tiktoken缓存文件..." && \
