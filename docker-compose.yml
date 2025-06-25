@@ -5,17 +5,42 @@ services:
     image: connermo/one-api:latest
     container_name: one-api
     restart: always
+    command: --log-dir /app/logs
     ports:
       - "3000:3000"
     volumes:
-      - ./data:/data
-      - ./logs:/logs
+      - ./data/oneapi:/data
+      - ./logs:/app/logs
     environment:
-      - SQL_DSN=sqlite:/data/one-api.db
+      - SQL_DSN=oneapi:123456@tcp(db:3306)/one-api
+      - REDIS_CONN_STRING=redis://redis
       - SESSION_SECRET=random_string
       - TZ=Asia/Shanghai
+    depends_on:
+      - redis
+      - db
     healthcheck:
       test: [ "CMD-SHELL", "wget -q -O - http://localhost:3000/api/status | grep -o '\"success\":\\s*true' | awk -F: '{print $2}'" ]
       interval: 30s
       timeout: 10s
       retries: 3
+
+  redis:
+    image: "${REGISTRY:-docker.io}/redis:latest"
+    container_name: redis
+    restart: always
+
+  db:
+    image: "${REGISTRY:-docker.io}/mysql:8.2.0"
+    restart: always
+    container_name: mysql
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: 'OneAPI@justsong'
+      MYSQL_USER: oneapi
+      MYSQL_PASSWORD: '123456'
+      MYSQL_DATABASE: one-api
