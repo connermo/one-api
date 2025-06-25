@@ -94,26 +94,6 @@ const OtherSetting = () => {
     await updateOption(key, inputs[key]);
   };
 
-  const openGitHubRelease = () => {
-    window.location = 'https://github.com/songquanpeng/one-api/releases/latest';
-  };
-
-  const checkUpdate = async () => {
-    const res = await API.get(
-      'https://api.github.com/repos/songquanpeng/one-api/releases/latest'
-    );
-    const { tag_name, body } = res.data;
-    if (tag_name === process.env.REACT_APP_VERSION) {
-      showSuccess(`已是最新版本：${tag_name}`);
-    } else {
-      setUpdateData({
-        tag_name: tag_name,
-        content: marked.parse(body),
-      });
-      setShowUpdateModal(true);
-    }
-  };
-
   return (
     <Grid columns={1}>
       <Grid.Column>
@@ -149,15 +129,7 @@ const OtherSetting = () => {
           </Form.Button>
           <Form.Group widths='equal'>
             <Form.Input
-              label={
-                <label>
-                  {t('setting.other.system.theme.title')}（
-                  <Link to='https://github.com/songquanpeng/one-api/blob/main/web/README.md'>
-                    {t('setting.other.system.theme.link')}
-                  </Link>
-                  ）
-                </label>
-              }
+              label={t('setting.other.system.theme.title')}
               placeholder={t('setting.other.system.theme.placeholder')}
               value={inputs.Theme}
               name='Theme'
@@ -224,28 +196,6 @@ const OtherSetting = () => {
           </Form.Button>
         </Form>
       </Grid.Column>
-      <Modal
-        onClose={() => setShowUpdateModal(false)}
-        onOpen={() => setShowUpdateModal(true)}
-        open={showUpdateModal}
-      >
-        <Modal.Header>新版本：{updateData.tag_name}</Modal.Header>
-        <Modal.Content>
-          <Modal.Description>
-            <div dangerouslySetInnerHTML={{ __html: updateData.content }}></div>
-          </Modal.Description>
-        </Modal.Content>
-        <Modal.Actions>
-          <Button onClick={() => setShowUpdateModal(false)}>关闭</Button>
-          <Button
-            content='详情'
-            onClick={() => {
-              setShowUpdateModal(false);
-              openGitHubRelease();
-            }}
-          />
-        </Modal.Actions>
-      </Modal>
     </Grid>
   );
 };

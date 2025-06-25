@@ -105,34 +105,11 @@ const OtherSetting = () => {
     await updateOption(key, inputs[key]);
   };
 
-  const openGitHubRelease = () => {
-    window.location = 'https://github.com/songquanpeng/one-api/releases/latest';
-  };
-
-  const checkUpdate = async () => {
-    const res = await API.get('https://api.github.com/repos/songquanpeng/one-api/releases/latest');
-    const { tag_name, body } = res.data;
-    if (tag_name === process.env.REACT_APP_VERSION) {
-      showSuccess(`已是最新版本：${tag_name}`);
-    } else {
-      setUpdateData({
-        tag_name: tag_name,
-        content: marked.parse(body)
-      });
-      setShowUpdateModal(true);
-    }
-  };
-
   return (
     <>
       <Stack spacing={2}>
         <SubCard title="通用设置">
           <Grid container spacing={{ xs: 3, sm: 2, md: 4 }}>
-            <Grid xs={12}>
-              <Button variant="contained" onClick={checkUpdate}>
-                检查更新
-              </Button>
-            </Grid>
             <Grid xs={12}>
               <FormControl fullWidth>
                 <TextField
@@ -282,27 +259,6 @@ const OtherSetting = () => {
           </Grid>
         </SubCard>
       </Stack>
-      <Dialog open={showUpdateModal} onClose={() => setShowUpdateModal(false)} fullWidth maxWidth={'md'}>
-        <DialogTitle sx={{ margin: '0px', fontWeight: 700, lineHeight: '1.55556', padding: '24px', fontSize: '1.125rem' }}>
-          新版本：{updateData.tag_name}
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          {' '}
-          <div dangerouslySetInnerHTML={{ __html: updateData.content }}></div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setShowUpdateModal(false)}>关闭</Button>
-          <Button
-            onClick={async () => {
-              setShowUpdateModal(false);
-              openGitHubRelease();
-            }}
-          >
-            去GitHub查看
-          </Button>
-        </DialogActions>
-      </Dialog>
     </>
   );
 };
