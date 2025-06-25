@@ -118,15 +118,17 @@ func openSQLiteWithDSN(dsn string) (*gorm.DB, error) {
 	common.UsingSQLite = true
 
 	// 从DSN中提取文件路径并确保目录存在
+	filePath := dsn
 	if strings.HasPrefix(dsn, "sqlite:") {
-		filePath := strings.TrimPrefix(dsn, "sqlite:")
-		dir := filepath.Dir(filePath)
-		if err := os.MkdirAll(dir, 0755); err != nil {
-			logger.SysLog("failed to create database directory: " + err.Error())
-		}
+		filePath = strings.TrimPrefix(dsn, "sqlite:")
 	}
 
-	return gorm.Open(sqlite.Open(dsn), &gorm.Config{
+	dir := filepath.Dir(filePath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		logger.SysLog("failed to create database directory: " + err.Error())
+	}
+
+	return gorm.Open(sqlite.Open(filePath), &gorm.Config{
 		PrepareStmt: true, // precompile SQL
 	})
 }
