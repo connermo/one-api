@@ -59,60 +59,11 @@ const Home = () => {
             <Card
               bordered={false}
               headerLine={false}
-              title='系统状况'
+              title='欢迎使用 One API'
               bodyStyle={{ padding: '10px 20px' }}
             >
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Card
-                    title='系统信息'
-                    headerExtraContent={<span
-                      style={{ fontSize: '12px', color: 'var(--semi-color-text-1)' }}>系统信息总览</span>}>
-                    <p>名称：{statusState?.status?.system_name}</p>
-                    <p>版本：{statusState?.status?.version ? statusState?.status?.version : 'unknown'}</p>
-                    <p>
-                      源码：
-                      <a
-                        href='https://github.com/songquanpeng/one-api'
-                        target='_blank' rel='noreferrer'
-                      >
-                        https://github.com/songquanpeng/one-api
-                      </a>
-                    </p>
-                    <p>启动时间：{getStartTimeString()}</p>
-                  </Card>
-                </Col>
-                <Col span={12}>
-                  <Card
-                    title='系统配置'
-                    headerExtraContent={<span
-                      style={{ fontSize: '12px', color: 'var(--semi-color-text-1)' }}>系统配置总览</span>}>
-                    <p>
-                      邮箱验证：
-                      {statusState?.status?.email_verification === true ? '已启用' : '未启用'}
-                    </p>
-                    <p>
-                      GitHub 身份验证：
-                      {statusState?.status?.github_oauth === true ? '已启用' : '未启用'}
-                    </p>
-                    <p>
-                      微信身份验证：
-                      {statusState?.status?.wechat_login === true ? '已启用' : '未启用'}
-                    </p>
-                    <p>
-                      Turnstile 用户校验：
-                      {statusState?.status?.turnstile_check === true ? '已启用' : '未启用'}
-                    </p>
-                    {/*<p>*/}
-                    {/*  Telegram 身份验证：*/}
-                    {/*  {statusState?.status?.telegram_oauth === true*/}
-                    {/*    ? '已启用' : '未启用'}*/}
-                    {/*</p>*/}
-                  </Card>
-                </Col>
-              </Row>
+              <p>请在后台自定义首页内容。</p>
             </Card>
-
           </>
           : <>
             {
