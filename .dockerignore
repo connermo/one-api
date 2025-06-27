@@ -1,0 +1,9 @@
+data/
+logs/
+*.log
+node_modules/
+.git/
+.idea/
+.vscode/
+*.tmp
+*.temp 
