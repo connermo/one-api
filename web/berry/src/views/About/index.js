@@ -40,8 +40,7 @@ const About = () => {
               <MainCard title="关于">
                 <Typography variant="body2">
                   可在设置页面设置关于内容，支持 HTML & Markdown <br />
-                  项目仓库地址：
-                  <a href="https://github.com/songquanpeng/one-api">https://github.com/songquanpeng/one-api</a>
+                  Powered by One API
                 </Typography>
               </MainCard>
             </Container>
