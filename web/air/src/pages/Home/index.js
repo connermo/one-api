@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Card } from '@douyinfe/semi-ui';
-import { API, showError, showNotice } from '../../helpers';
+import { Card, Col, Row } from '@douyinfe/semi-ui';
+import { API, showError, showNotice, timestamp2string } from '../../helpers';
+import { StatusContext } from '../../context/Status';
 import { marked } from 'marked';
 
 const Home = () => {
+  const [statusState] = useContext(StatusContext);
   const [homePageContentLoaded, setHomePageContentLoaded] = useState(false);
   const [homePageContent, setHomePageContent] = useState('');
 
@@ -40,11 +42,15 @@ const Home = () => {
     setHomePageContentLoaded(true);
   };
 
+  const getStartTimeString = () => {
+    const timestamp = statusState?.status?.start_time;
+    return statusState.status ? timestamp2string(timestamp) : '';
+  };
+
   useEffect(() => {
     displayNotice().then();
     displayHomePageContent().then();
   }, []);
-  
   return (
     <>
       {
@@ -53,10 +59,10 @@ const Home = () => {
             <Card
               bordered={false}
               headerLine={false}
-              title='欢迎'
+              title='欢迎使用 One API'
               bodyStyle={{ padding: '10px 20px' }}
             >
-              <p>欢迎使用 One API</p>
+              <p>请在后台自定义首页内容。</p>
             </Card>
           </>
           : <>
@@ -67,6 +73,7 @@ const Home = () => {
             }
           </>
       }
+
     </>
   );
 };

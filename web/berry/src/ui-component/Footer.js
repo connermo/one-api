@@ -1,25 +1,15 @@
 // material-ui
-import { Container, Box } from '@mui/material';
+import { Link, Container, Box } from '@mui/material';
 import React from 'react';
 import { useSelector } from 'react-redux';
 
 // ==============================|| FOOTER - AUTHENTICATION 2 & 3 ||============================== //
 
 const Footer = () => {
-  const siteInfo = useSelector((state) => state.siteInfo);
-
   return (
-    <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '64px' }}>
-      <Box sx={{ textAlign: 'center' }}>
-        {siteInfo.footer_html ? (
-          <div className="custom-footer" dangerouslySetInnerHTML={{ __html: siteInfo.footer_html }}></div>
-        ) : (
-          <>
-            {siteInfo.system_name} {process.env.REACT_APP_VERSION}
-          </>
-        )}
-      </Box>
-    </Container>
+    <footer style={{ textAlign: 'center', padding: 16, color: '#888' }}>
+      Powered by One API
+    </footer>
   );
 };
 
