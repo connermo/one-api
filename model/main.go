@@ -3,6 +3,10 @@ package model
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"strings"
+	"time"
+
 	"github.com/songquanpeng/one-api/common"
 	"github.com/songquanpeng/one-api/common/config"
 	"github.com/songquanpeng/one-api/common/env"
@@ -13,9 +17,6 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"os"
-	"strings"
-	"time"
 )
 
 var DB *gorm.DB
@@ -71,6 +72,9 @@ func chooseDB(envName string) (*gorm.DB, error) {
 	case strings.HasPrefix(dsn, "postgres://"):
 		// Use PostgreSQL
 		return openPostgreSQL(dsn)
+	case strings.HasPrefix(dsn, "oceanbase://") || strings.Contains(dsn, "ob_"):
+		// Use OceanBase (MySQL compatible)
+		return openOceanBase(dsn)
 	case dsn != "":
 		// Use MySQL
 		return openMySQL(dsn)
@@ -99,6 +103,40 @@ func openMySQL(dsn string) (*gorm.DB, error) {
 	})
 }
 
+func openOceanBase(dsn string) (*gorm.DB, error) {
+	logger.SysLog("using OceanBase as database")
+	common.UsingOceanBase = true
+
+	// Convert oceanbase:// DSN to MySQL format if needed
+	if strings.HasPrefix(dsn, "oceanbase://") {
+		dsn = strings.Replace(dsn, "oceanbase://", "", 1)
+	}
+
+	// Check if using environment variables for OceanBase connection
+	obUser := os.Getenv("OCEANBASE_USER")
+	obPassword := os.Getenv("OCEANBASE_PASSWORD")
+	obHost := os.Getenv("OCEANBASE_HOST")
+	obPort := os.Getenv("OCEANBASE_PORT")
+	obDatabase := os.Getenv("OCEANBASE_DATABASE")
+
+	// If all OceanBase environment variables are set, use them instead of DSN
+	if obUser != "" && obPassword != "" && obHost != "" && obDatabase != "" {
+		if obPort == "" {
+			obPort = "2881" // Default OceanBase port
+		}
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", obUser, obPassword, obHost, obPort, obDatabase)
+		logger.SysLog("using OceanBase environment variables for connection")
+	} else {
+		// Handle URL-encoded usernames (for cases like user@tenant:cluster)
+		// The colon in the username should be encoded as %3A
+		logger.SysLog("using OceanBase DSN for connection (note: encode colons in username as %3A)")
+	}
+
+	return gorm.Open(mysql.Open(dsn), &gorm.Config{
+		PrepareStmt: true, // precompile SQL
+	})
+}
+
 func openSQLite() (*gorm.DB, error) {
 	logger.SysLog("SQL_DSN not set, using SQLite as database")
 	common.UsingSQLite = true
@@ -122,7 +160,7 @@ func InitDB() {
 		return
 	}
 
-	if common.UsingMySQL {
+	if common.UsingMySQL || common.UsingOceanBase {
 		_, _ = sqlDB.Exec("DROP INDEX idx_channels_key ON channels;") // TODO: delete this line when most users have upgraded
 	}
 

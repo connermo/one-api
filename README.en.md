@@ -239,22 +239,35 @@ If the channel ID is not provided, load balancing will be used to distribute the
     + Example: `REDIS_CONN_STRING=redis://default:redispw@localhost:49153`
 2. `SESSION_SECRET`: When set, a fixed session key will be used to ensure that cookies of logged-in users are still valid after the system restarts.
     + Example: `SESSION_SECRET=random_string`
-3. `SQL_DSN`: When set, the specified database will be used instead of SQLite. Please use MySQL version 8.0.
-    + Example: `SQL_DSN=root:123456@tcp(localhost:3306)/oneapi`
+3. `SQL_DSN`: When set, the specified database will be used instead of SQLite. Please use MySQL, PostgreSQL, or OceanBase.
+    + Examples:
+      + MySQL: `SQL_DSN=root:123456@tcp(localhost:3306)/oneapi`
+      + PostgreSQL: `SQL_DSN=postgres://postgres:123456@localhost:5432/oneapi`
+      + OceanBase:
+        - Method 1 (URL encoding): `SQL_DSN=root%40tenant%3Acluster:123456@tcp(localhost:2881)/oneapi`
+        - Method 2 (environment variables): Set `OCEANBASE_USER=root@tenant:cluster`, `OCEANBASE_PASSWORD=123456`, `OCEANBASE_HOST=localhost`, `OCEANBASE_PORT=2881`, `OCEANBASE_DATABASE=oneapi`, then set `SQL_DSN=oceanbase://dummy`
+        - Method 3 (simple format): `SQL_DSN=oceanbase://root:123456@tcp(localhost:2881)/oneapi` (only for usernames without special characters)
 4. `LOG_SQL_DSN`: When set, a separate database will be used for the `logs` table; please use MySQL or PostgreSQL.
     + Example: `LOG_SQL_DSN=root:123456@tcp(localhost:3306)/oneapi-logs`
-5. `FRONTEND_BASE_URL`: When set, the specified frontend address will be used instead of the backend address.
+5. OceanBase specific environment variables (recommended when username contains special characters like colons):
+    + `OCEANBASE_USER`: OceanBase username (e.g., `root@tenant:cluster`)
+    + `OCEANBASE_PASSWORD`: OceanBase password
+    + `OCEANBASE_HOST`: OceanBase host address
+    + `OCEANBASE_PORT`: OceanBase port (default: `2881`)
+    + `OCEANBASE_DATABASE`: Database name
+    + When using these environment variables, you still need to set `SQL_DSN=oceanbase://dummy` to trigger OceanBase mode
+6. `FRONTEND_BASE_URL`: When set, the specified frontend address will be used instead of the backend address.
     + Example: `FRONTEND_BASE_URL=https://openai.justsong.cn`
-6. 'MEMORY_CACHE_ENABLED': Enabling memory caching can cause a certain delay in updating user quotas, with optional values of 'true' and 'false'. If not set, it defaults to 'false'.
-7. `SYNC_FREQUENCY`: When set, the system will periodically sync configurations from the database, with the unit in seconds. If not set, no sync will happen.
+7. 'MEMORY_CACHE_ENABLED': Enabling memory caching can cause a certain delay in updating user quotas, with optional values of 'true' and 'false'. If not set, it defaults to 'false'.
+8. `SYNC_FREQUENCY`: When set, the system will periodically sync configurations from the database, with the unit in seconds. If not set, no sync will happen.
     + Example: `SYNC_FREQUENCY=60`
-8. `NODE_TYPE`: When set, specifies the node type. Valid values are `master` and `slave`. If not set, it defaults to `master`.
+9. `NODE_TYPE`: When set, specifies the node type. Valid values are `master` and `slave`. If not set, it defaults to `master`.
     + Example: `NODE_TYPE=slave`
-9. `CHANNEL_UPDATE_FREQUENCY`: When set, it periodically updates the channel balances, with the unit in minutes. If not set, no update will happen.
+10. `CHANNEL_UPDATE_FREQUENCY`: When set, it periodically updates the channel balances, with the unit in minutes. If not set, no update will happen.
     + Example: `CHANNEL_UPDATE_FREQUENCY=1440`
-10. `CHANNEL_TEST_FREQUENCY`: When set, it periodically tests the channels, with the unit in minutes. If not set, no test will happen.
+11. `CHANNEL_TEST_FREQUENCY`: When set, it periodically tests the channels, with the unit in minutes. If not set, no test will happen.
     + Example: `CHANNEL_TEST_FREQUENCY=1440`
-11. `POLLING_INTERVAL`: The time interval (in seconds) between requests when updating channel balances and testing channel availability. Default is no interval.
+12. `POLLING_INTERVAL`: The time interval (in seconds) between requests when updating channel balances and testing channel availability. Default is no interval.
     + Example: `POLLING_INTERVAL=5`
 12. `BATCH_UPDATE_ENABLED`: Enabling batch database update aggregation can cause a certain delay in updating user quotas. The optional values are 'true' and 'false', but if not set, it defaults to 'false'.
     +Example: ` BATCH_UPDATE_ENABLED=true`

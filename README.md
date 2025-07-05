@@ -362,10 +362,14 @@ graph LR
        + `REDIS_MASTER_NAME`：Redis 哨兵模式下主节点的名称。
 2. `SESSION_SECRET`：设置之后将使用固定的会话密钥，这样系统重新启动后已登录用户的 cookie 将依旧有效。
    + 例子：`SESSION_SECRET=random_string`
-3. `SQL_DSN`：设置之后将使用指定数据库而非 SQLite，请使用 MySQL 或 PostgreSQL。
+3. `SQL_DSN`：设置之后将使用指定数据库而非 SQLite，请使用 MySQL、PostgreSQL 或 OceanBase。
    + 例子：
      + MySQL：`SQL_DSN=root:123456@tcp(localhost:3306)/oneapi`
      + PostgreSQL：`SQL_DSN=postgres://postgres:123456@localhost:5432/oneapi`（适配中，欢迎反馈）
+     + OceanBase：
+       - 方式1（URL编码）：`SQL_DSN=root%40tenant%3Acluster:123456@tcp(localhost:2881)/oneapi`
+       - 方式2（环境变量）：设置 `OCEANBASE_USER=root@tenant:cluster`、`OCEANBASE_PASSWORD=123456`、`OCEANBASE_HOST=localhost`、`OCEANBASE_PORT=2881`、`OCEANBASE_DATABASE=oneapi`，然后设置 `SQL_DSN=oceanbase://dummy`
+       - 方式3（简单格式）：`SQL_DSN=oceanbase://root:123456@tcp(localhost:2881)/oneapi`（仅适用于用户名不含特殊字符的情况）
    + 注意需要提前建立数据库 `oneapi`，无需手动建表，程序将自动建表。
    + 如果使用本地数据库：部署命令可添加 `--network="host"` 以使得容器内的程序可以访问到宿主机上的 MySQL。
    + 如果使用云数据库：如果云服务器需要验证身份，需要在连接参数中添加 `?tls=skip-verify`。
@@ -375,46 +379,53 @@ graph LR
        + 如果报错 `Error 1040: Too many connections`，请适当减小该值。
      + `SQL_CONN_MAX_LIFETIME`：连接的最大生命周期，默认为 `60`，单位分钟。
 4. `LOG_SQL_DSN`：设置之后将为 `logs` 表使用独立的数据库，请使用 MySQL 或 PostgreSQL。
-5. `FRONTEND_BASE_URL`：设置之后将重定向页面请求到指定的地址，仅限从服务器设置。
+5. OceanBase 专用环境变量（当用户名包含特殊字符如冒号时推荐使用）：
+   + `OCEANBASE_USER`：OceanBase 用户名（如：`root@tenant:cluster`）
+   + `OCEANBASE_PASSWORD`：OceanBase 密码
+   + `OCEANBASE_HOST`：OceanBase 主机地址
+   + `OCEANBASE_PORT`：OceanBase 端口（默认：`2881`）
+   + `OCEANBASE_DATABASE`：数据库名称
+   + 使用这些环境变量时，仍需设置 `SQL_DSN=oceanbase://dummy` 来触发 OceanBase 模式
+6. `FRONTEND_BASE_URL`：设置之后将重定向页面请求到指定的地址，仅限从服务器设置。
    + 例子：`FRONTEND_BASE_URL=https://openai.justsong.cn`
-6. `MEMORY_CACHE_ENABLED`：启用内存缓存，会导致用户额度的更新存在一定的延迟，可选值为 `true` 和 `false`，未设置则默认为 `false`。
+7. `MEMORY_CACHE_ENABLED`：启用内存缓存，会导致用户额度的更新存在一定的延迟，可选值为 `true` 和 `false`，未设置则默认为 `false`。
    + 例子：`MEMORY_CACHE_ENABLED=true`
-7. `SYNC_FREQUENCY`：在启用缓存的情况下与数据库同步配置的频率，单位为秒，默认为 `600` 秒。
+8. `SYNC_FREQUENCY`：在启用缓存的情况下与数据库同步配置的频率，单位为秒，默认为 `600` 秒。
    + 例子：`SYNC_FREQUENCY=60`
-8. `NODE_TYPE`：设置之后将指定节点类型，可选值为 `master` 和 `slave`，未设置则默认为 `master`。
+9. `NODE_TYPE`：设置之后将指定节点类型，可选值为 `master` 和 `slave`，未设置则默认为 `master`。
    + 例子：`NODE_TYPE=slave`
-9. `CHANNEL_UPDATE_FREQUENCY`：设置之后将定期更新渠道余额，单位为分钟，未设置则不进行更新。
-   + 例子：`CHANNEL_UPDATE_FREQUENCY=1440`
-10. `CHANNEL_TEST_FREQUENCY`：设置之后将定期检查渠道，单位为分钟，未设置则不进行检查。 
-   +例子：`CHANNEL_TEST_FREQUENCY=1440`
-11. `POLLING_INTERVAL`：批量更新渠道余额以及测试可用性时的请求间隔，单位为秒，默认无间隔。
+10. `CHANNEL_UPDATE_FREQUENCY`：设置之后将定期更新渠道余额，单位为分钟，未设置则不进行更新。
+    + 例子：`CHANNEL_UPDATE_FREQUENCY=1440`
+11. `CHANNEL_TEST_FREQUENCY`：设置之后将定期检查渠道，单位为分钟，未设置则不进行检查。 
+    + 例子：`CHANNEL_TEST_FREQUENCY=1440`
+12. `POLLING_INTERVAL`：批量更新渠道余额以及测试可用性时的请求间隔，单位为秒，默认无间隔。
     + 例子：`POLLING_INTERVAL=5`
-12. `BATCH_UPDATE_ENABLED`：启用数据库批量更新聚合，会导致用户额度的更新存在一定的延迟可选值为 `true` 和 `false`，未设置则默认为 `false`。
+13. `BATCH_UPDATE_ENABLED`：启用数据库批量更新聚合，会导致用户额度的更新存在一定的延迟可选值为 `true` 和 `false`，未设置则默认为 `false`。
     + 例子：`BATCH_UPDATE_ENABLED=true`
     + 如果你遇到了数据库连接数过多的问题，可以尝试启用该选项。
-13. `BATCH_UPDATE_INTERVAL=5`：批量更新聚合的时间间隔，单位为秒，默认为 `5`。
+14. `BATCH_UPDATE_INTERVAL=5`：批量更新聚合的时间间隔，单位为秒，默认为 `5`。
     + 例子：`BATCH_UPDATE_INTERVAL=5`
-14. 请求频率限制：
+15. 请求频率限制：
     + `GLOBAL_API_RATE_LIMIT`：全局 API 速率限制（除中继请求外），单 ip 三分钟内的最大请求数，默认为 `180`。
     + `GLOBAL_WEB_RATE_LIMIT`：全局 Web 速率限制，单 ip 三分钟内的最大请求数，默认为 `60`。
-15. 编码器缓存设置：
+16. 编码器缓存设置：
     + `TIKTOKEN_CACHE_DIR`：默认程序启动时会联网下载一些通用的词元的编码，如：`gpt-3.5-turbo`，在一些网络环境不稳定，或者离线情况，可能会导致启动有问题，可以配置此目录缓存数据，可迁移到离线环境。
     + `DATA_GYM_CACHE_DIR`：目前该配置作用与 `TIKTOKEN_CACHE_DIR` 一致，但是优先级没有它高。
-16. `RELAY_TIMEOUT`：中继超时设置，单位为秒，默认不设置超时时间。
-17. `RELAY_PROXY`：设置后使用该代理来请求 API。
-18. `USER_CONTENT_REQUEST_TIMEOUT`：用户上传内容下载超时时间，单位为秒。
-19. `USER_CONTENT_REQUEST_PROXY`：设置后使用该代理来请求用户上传的内容，例如图片。
-20. `SQLITE_BUSY_TIMEOUT`：SQLite 锁等待超时设置，单位为毫秒，默认 `3000`。
-21. `GEMINI_SAFETY_SETTING`：Gemini 的安全设置，默认 `BLOCK_NONE`。
-22. `GEMINI_VERSION`：One API 所使用的 Gemini 版本，默认为 `v1`。
-23. `THEME`：系统的主题设置，默认为 `default`，具体可选值参考[此处](./web/README.md)。
-24. `ENABLE_METRIC`：是否根据请求成功率禁用渠道，默认不开启，可选值为 `true` 和 `false`。
-25. `METRIC_QUEUE_SIZE`：请求成功率统计队列大小，默认为 `10`。
-26. `METRIC_SUCCESS_RATE_THRESHOLD`：请求成功率阈值，默认为 `0.8`。
-27. `INITIAL_ROOT_TOKEN`：如果设置了该值，则在系统首次启动时会自动创建一个值为该环境变量值的 root 用户令牌。
-28. `INITIAL_ROOT_ACCESS_TOKEN`：如果设置了该值，则在系统首次启动时会自动创建一个值为该环境变量的 root 用户创建系统管理令牌。
-29. `ENFORCE_INCLUDE_USAGE`：是否强制在 stream 模型下返回 usage，默认不开启，可选值为 `true` 和 `false`。
-30. `TEST_PROMPT`：测试模型时的用户 prompt，默认为 `Print your model name exactly and do not output without any other text.`。
+17. `RELAY_TIMEOUT`：中继超时设置，单位为秒，默认不设置超时时间。
+18. `RELAY_PROXY`：设置后使用该代理来请求 API。
+19. `USER_CONTENT_REQUEST_TIMEOUT`：用户上传内容下载超时时间，单位为秒。
+20. `USER_CONTENT_REQUEST_PROXY`：设置后使用该代理来请求用户上传的内容，例如图片。
+21. `SQLITE_BUSY_TIMEOUT`：SQLite 锁等待超时设置，单位为毫秒，默认 `3000`。
+22. `GEMINI_SAFETY_SETTING`：Gemini 的安全设置，默认 `BLOCK_NONE`。
+23. `GEMINI_VERSION`：One API 所使用的 Gemini 版本，默认为 `v1`。
+24. `THEME`：系统的主题设置，默认为 `default`，具体可选值参考[此处](./web/README.md)。
+25. `ENABLE_METRIC`：是否根据请求成功率禁用渠道，默认不开启，可选值为 `true` 和 `false`。
+26. `METRIC_QUEUE_SIZE`：请求成功率统计队列大小，默认为 `10`。
+27. `METRIC_SUCCESS_RATE_THRESHOLD`：请求成功率阈值，默认为 `0.8`。
+28. `INITIAL_ROOT_TOKEN`：如果设置了该值，则在系统首次启动时会自动创建一个值为该环境变量值的 root 用户令牌。
+29. `INITIAL_ROOT_ACCESS_TOKEN`：如果设置了该值，则在系统首次启动时会自动创建一个值为该环境变量的 root 用户创建系统管理令牌。
+30. `ENFORCE_INCLUDE_USAGE`：是否强制在 stream 模型下返回 usage，默认不开启，可选值为 `true` 和 `false`。
+31. `TEST_PROMPT`：测试模型时的用户 prompt，默认为 `Print your model name exactly and do not output without any other text.`。
 
 ### 命令行参数
 1. `--port <port_number>`: 指定服务器监听的端口号，默认为 `3000`。

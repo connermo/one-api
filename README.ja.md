@@ -240,20 +240,33 @@ graph LR
     + 例: `REDIS_CONN_STRING=redis://default:redispw@localhost:49153`
 2. `SESSION_SECRET`: 設定すると、固定セッションキーが使用され、システムの再起動後もログインユーザーのクッキーが有効であることが保証されます。
     + 例: `SESSION_SECRET=random_string`
-3. `SQL_DSN`: 設定すると、SQLite の代わりに指定したデータベースが使用されます。MySQL バージョン 8.0 を使用してください。
-    + 例: `SQL_DSN=root:123456@tcp(localhost:3306)/oneapi`
+3. `SQL_DSN`: 設定すると、SQLite の代わりに指定したデータベースが使用されます。MySQL、PostgreSQL、または OceanBase を使用してください。
+    + 例:
+      + MySQL: `SQL_DSN=root:123456@tcp(localhost:3306)/oneapi`
+      + PostgreSQL: `SQL_DSN=postgres://postgres:123456@localhost:5432/oneapi`
+      + OceanBase:
+        - 方法1（URL エンコーディング）: `SQL_DSN=root%40tenant%3Acluster:123456@tcp(localhost:2881)/oneapi`
+        - 方法2（環境変数）: `OCEANBASE_USER=root@tenant:cluster`、`OCEANBASE_PASSWORD=123456`、`OCEANBASE_HOST=localhost`、`OCEANBASE_PORT=2881`、`OCEANBASE_DATABASE=oneapi` を設定し、`SQL_DSN=oceanbase://dummy` を設定
+        - 方法3（シンプルフォーマット）: `SQL_DSN=oceanbase://root:123456@tcp(localhost:2881)/oneapi`（特殊文字を含まないユーザー名の場合のみ）
 4. `LOG_SQL_DSN`: を設定すると、`logs`テーブルには独立したデータベースが使用されます。MySQLまたはPostgreSQLを使用してください。
-5. `FRONTEND_BASE_URL`: 設定されると、バックエンドアドレスではなく、指定されたフロントエンドアドレスが使われる。
+5. OceanBase 専用環境変数（ユーザー名にコロンなどの特殊文字が含まれる場合に推奨）:
+    + `OCEANBASE_USER`: OceanBase ユーザー名（例: `root@tenant:cluster`）
+    + `OCEANBASE_PASSWORD`: OceanBase パスワード
+    + `OCEANBASE_HOST`: OceanBase ホストアドレス
+    + `OCEANBASE_PORT`: OceanBase ポート（デフォルト: `2881`）
+    + `OCEANBASE_DATABASE`: データベース名
+    + これらの環境変数を使用する場合、OceanBase モードをトリガーするために `SQL_DSN=oceanbase://dummy` を設定する必要があります
+6. `FRONTEND_BASE_URL`: 設定されると、バックエンドアドレスではなく、指定されたフロントエンドアドレスが使われる。
     + 例: `FRONTEND_BASE_URL=https://openai.justsong.cn`
-6. `SYNC_FREQUENCY`: 設定された場合、システムは定期的にデータベースからコンフィグを秒単位で同期する。設定されていない場合、同期は行われません。
+7. `SYNC_FREQUENCY`: 設定された場合、システムは定期的にデータベースからコンフィグを秒単位で同期する。設定されていない場合、同期は行われません。
     + 例: `SYNC_FREQUENCY=60`
-7. `NODE_TYPE`: 設定すると、ノードのタイプを指定する。有効な値は `master` と `slave` である。設定されていない場合、デフォルトは `master`。
+8. `NODE_TYPE`: 設定すると、ノードのタイプを指定する。有効な値は `master` と `slave` である。設定されていない場合、デフォルトは `master`。
     + 例: `NODE_TYPE=slave`
-8. `CHANNEL_UPDATE_FREQUENCY`: 設定すると、チャンネル残高を分単位で定期的に更新する。設定されていない場合、更新は行われません。
+9. `CHANNEL_UPDATE_FREQUENCY`: 設定すると、チャンネル残高を分単位で定期的に更新する。設定されていない場合、更新は行われません。
     + 例: `CHANNEL_UPDATE_FREQUENCY=1440`
-9. `CHANNEL_TEST_FREQUENCY`: 設定すると、チャンネルを定期的にテストする。設定されていない場合、テストは行われません。
+10. `CHANNEL_TEST_FREQUENCY`: 設定すると、チャンネルを定期的にテストする。設定されていない場合、テストは行われません。
     + 例: `CHANNEL_TEST_FREQUENCY=1440`
-10. `POLLING_INTERVAL`: チャネル残高の更新とチャネルの可用性をテストするときのリクエスト間の時間間隔 (秒)。デフォルトは間隔なし。
+11. `POLLING_INTERVAL`: チャネル残高の更新とチャネルの可用性をテストするときのリクエスト間の時間間隔 (秒)。デフォルトは間隔なし。
     + 例: `POLLING_INTERVAL=5`
 
 ### コマンドラインパラメータ
