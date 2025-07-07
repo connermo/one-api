@@ -47,23 +47,24 @@ if [ $counter -ge $timeout ]; then
 fi
 
 # 步骤2：创建用户和数据库
-print_step "步骤2: 创建 a_oneapi 用户和数据库"
-docker exec -i oceanbase-client mysql -h oceanbase-ce -P 2881 -uroot -p123456 < create_oceanbase_user.sql
+print_step "步骤2: 连接到 test 租户并创建 a_oneapi 用户"
+echo "连接到 test 租户: root@test:test-cluster"
+docker exec -i oceanbase-client mysql -h oceanbase-ce -P 2881 -u'root@test:test-cluster' -p123456 < create_oceanbase_user.sql
 
 # 步骤3：测试新用户连接
 print_step "步骤3: 测试 a_oneapi 用户连接"
-if docker exec oceanbase-client mysql -h oceanbase-ce -P 2881 -ua_oneapi -p'5R,cLi3^q9:N' one_api -e "SELECT USER(), DATABASE(), VERSION();" 2>/dev/null; then
+echo "测试用户连接: a_oneapi@test:test-cluster"
+if docker exec oceanbase-client mysql -h oceanbase-ce -P 2881 -u'a_oneapi@test:test-cluster' -p'5R,cLi3^q9:N' one_api -e "SELECT USER(), DATABASE(), VERSION();" 2>/dev/null; then
     print_success "a_oneapi 用户连接测试成功"
 else
     print_error "a_oneapi 用户连接测试失败"
-    echo "尝试使用完整用户名格式..."
-    if docker exec oceanbase-client mysql -h oceanbase-ce -P 2881 -u'a_oneapi@CATL_CE_OND02:ONEAPI' -p'5R,cLi3^q9:N' one_api -e "SELECT USER(), DATABASE(), VERSION();" 2>/dev/null; then
-        print_success "使用完整用户名格式连接成功"
-        # 更新环境变量为完整格式
-        print_step "更新 docker-compose 配置为完整用户名格式"
-        sed -i '' 's/OCEANBASE_USER: "a_oneapi"/OCEANBASE_USER: "a_oneapi@CATL_CE_OND02:ONEAPI"/' docker-compose-oceanbase.yml
+    echo "尝试不带租户信息的连接..."
+    if docker exec oceanbase-client mysql -h oceanbase-ce -P 2881 -ua_oneapi -p'5R,cLi3^q9:N' one_api -e "SELECT USER(), DATABASE(), VERSION();" 2>/dev/null; then
+        print_success "使用简单用户名格式连接成功"
     else
         print_error "所有用户名格式连接测试都失败"
+        echo "检查用户创建日志："
+        docker exec oceanbase-client mysql -h oceanbase-ce -P 2881 -u'root@test:test-cluster' -p123456 -e "SELECT User, Host FROM mysql.user WHERE User='a_oneapi';" 2>/dev/null || echo "无法查询用户列表"
         exit 1
     fi
 fi
@@ -111,8 +112,8 @@ fi
 # 步骤8：检查数据库表是否创建
 print_step "步骤8: 检查 One API 是否成功创建数据库表"
 echo "=== 检查数据库表 ==="
-docker exec oceanbase-client mysql -h oceanbase-ce -P 2881 -ua_oneapi -p'5R,cLi3^q9:N' one_api -e "SHOW TABLES;" 2>/dev/null || \
-docker exec oceanbase-client mysql -h oceanbase-ce -P 2881 -u'a_oneapi@CATL_CE_OND02:ONEAPI' -p'5R,cLi3^q9:N' one_api -e "SHOW TABLES;" 2>/dev/null
+docker exec oceanbase-client mysql -h oceanbase-ce -P 2881 -u'a_oneapi@test:test-cluster' -p'5R,cLi3^q9:N' one_api -e "SHOW TABLES;" 2>/dev/null || \
+docker exec oceanbase-client mysql -h oceanbase-ce -P 2881 -ua_oneapi -p'5R,cLi3^q9:N' one_api -e "SHOW TABLES;" 2>/dev/null
 
 # 完成测试
 print_success "测试完成！"
@@ -129,5 +130,6 @@ echo "• API Token: sk-oceanbase-test123456"
 echo ""
 echo "=== 手动测试命令 ==="
 echo "• 查看 One API 日志: docker logs one-api-oceanbase -f"
-echo "• 连接数据库: docker exec -it oceanbase-client mysql -h oceanbase-ce -P 2881 -ua_oneapi -p'5R,cLi3^q9:N' one_api"
+echo "• 连接数据库（完整格式）: docker exec -it oceanbase-client mysql -h oceanbase-ce -P 2881 -u'a_oneapi@test:test-cluster' -p'5R,cLi3^q9:N' one_api"
+echo "• 连接数据库（简单格式）: docker exec -it oceanbase-client mysql -h oceanbase-ce -P 2881 -ua_oneapi -p'5R,cLi3^q9:N' one_api"
 echo "• 停止服务: docker-compose -f docker-compose-oceanbase.yml down" 

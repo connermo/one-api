@@ -37,8 +37,8 @@ services:
       OCEANBASE_HOST: "oceanbase-ce"
       OCEANBASE_PORT: "2881"
       OCEANBASE_DATABASE: "one_api"
-      OCEANBASE_TENANT: "CATL_CE_OND02"
-      OCEANBASE_CLUSTER: "ONEAPI"
+      OCEANBASE_TENANT: "test"
+      OCEANBASE_CLUSTER: "test-cluster"
       
       # One API 基本配置
       SESSION_SECRET: "random_session_secret_for_test"

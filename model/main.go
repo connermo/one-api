@@ -118,14 +118,29 @@ func openOceanBase(dsn string) (*gorm.DB, error) {
 	obHost := os.Getenv("OCEANBASE_HOST")
 	obPort := os.Getenv("OCEANBASE_PORT")
 	obDatabase := os.Getenv("OCEANBASE_DATABASE")
+	obTenant := os.Getenv("OCEANBASE_TENANT")
+	obCluster := os.Getenv("OCEANBASE_CLUSTER")
 
 	// If all OceanBase environment variables are set, use them instead of DSN
 	if obUser != "" && obPassword != "" && obHost != "" && obDatabase != "" {
 		if obPort == "" {
 			obPort = "2881" // Default OceanBase port
 		}
-		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", obUser, obPassword, obHost, obPort, obDatabase)
-		logger.SysLog("using OceanBase environment variables for connection")
+
+		// Construct the full username with tenant and cluster information
+		fullUsername := obUser
+		if obTenant != "" {
+			if obCluster != "" {
+				// Format: user@tenant:cluster
+				fullUsername = fmt.Sprintf("%s@%s:%s", obUser, obTenant, obCluster)
+			} else {
+				// Format: user@tenant
+				fullUsername = fmt.Sprintf("%s@%s", obUser, obTenant)
+			}
+		}
+
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", fullUsername, obPassword, obHost, obPort, obDatabase)
+		logger.SysLog(fmt.Sprintf("using OceanBase environment variables for connection with username: %s", fullUsername))
 	} else {
 		// Handle URL-encoded usernames (for cases like user@tenant:cluster)
 		// The colon in the username should be encoded as %3A
