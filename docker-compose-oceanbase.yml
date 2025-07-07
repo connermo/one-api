@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  oceanbase-ce:
+    image: oceanbase/oceanbase-ce:latest
+    container_name: oceanbase-ce
+    hostname: oceanbase-ce
+    ports:
+      - "2881:2881"
+      - "2882:2882"
+    environment:
+      - MODE=mini
+      - OB_CLUSTER_NAME=test-cluster
+      - OB_TENANT_NAME=test
+      - OB_ROOT_PASSWORD=123456
+      - OB_MEMORY_LIMIT=8G
+      - OB_DATAFILE_SIZE=5G
+    volumes:
+      - oceanbase_data:/root/ob
+    healthcheck:
+      test: ["CMD", "mysql", "-h", "127.0.0.1", "-P", "2881", "-uroot", "-p123456", "-e", "SELECT 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+
+  one-api:
+    image: connermo/one-api:v0.6.10-ob
+    container_name: one-api-oceanbase
+    ports:
+      - "3000:3000"
+    environment:
+      # OceanBase 专用环境变量配置
+      SQL_DSN: "oceanbase://dummy"
+      OCEANBASE_USER: "a_oneapi"
+      OCEANBASE_PASSWORD: "5R,cLi3^q9:N"
+      OCEANBASE_HOST: "oceanbase-ce"
+      OCEANBASE_PORT: "2881"
+      OCEANBASE_DATABASE: "one_api"
+      OCEANBASE_TENANT: "CATL_CE_OND02"
+      OCEANBASE_CLUSTER: "ONEAPI"
+      
+      # One API 基本配置
+      SESSION_SECRET: "random_session_secret_for_test"
+      INITIAL_ROOT_TOKEN: "sk-oceanbase-test123456"
+      GIN_MODE: "debug"
+      LOG_LEVEL: "debug"
+    depends_on:
+      oceanbase-ce:
+        condition: service_healthy
+    networks:
+      - oceanbase-net
+
+  # MySQL客户端用于测试连接
+  mysql-client:
+    image: mysql:8.0
+    container_name: oceanbase-client
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    command: >
+      sh -c "
+        echo 'OceanBase CE MySQL客户端就绪'
+        echo '测试连接命令：'
+        echo 'docker exec -it oceanbase-client mysql -h oceanbase-ce -P 2881 -uroot -p123456'
+        tail -f /dev/null
+      "
+    networks:
+      - oceanbase-net
+    depends_on:
+      - oceanbase-ce
+
+volumes:
+  oceanbase_data:
+
+networks:
+  oceanbase-net:
+    driver: bridge 

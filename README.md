@@ -395,7 +395,7 @@ graph LR
 9. `NODE_TYPE`：设置之后将指定节点类型，可选值为 `master` 和 `slave`，未设置则默认为 `master`。
    + 例子：`NODE_TYPE=slave`
 10. `CHANNEL_UPDATE_FREQUENCY`：设置之后将定期更新渠道余额，单位为分钟，未设置则不进行更新。
-    + 例子：`CHANNEL_UPDATE_FREQUENCY=1440`
+   + 例子：`CHANNEL_UPDATE_FREQUENCY=1440`
 11. `CHANNEL_TEST_FREQUENCY`：设置之后将定期检查渠道，单位为分钟，未设置则不进行检查。 
     + 例子：`CHANNEL_TEST_FREQUENCY=1440`
 12. `POLLING_INTERVAL`：批量更新渠道余额以及测试可用性时的请求间隔，单位为秒，默认无间隔。
