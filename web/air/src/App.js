@@ -11,6 +11,7 @@ import EditUser from './pages/User/EditUser';
 import { getLogo, getSystemName } from './helpers';
 import PasswordResetForm from './components/PasswordResetForm';
 import GitHubOAuth from './components/GitHubOAuth';
+import CustomOAuth from './components/CustomOAuth';
 import PasswordResetConfirm from './components/PasswordResetConfirm';
 import { UserContext } from './context/User';
 import Channel from './pages/Channel';
@@ -168,6 +169,14 @@ function App() {
             element={
               <Suspense fallback={<Loading></Loading>}>
                 <GitHubOAuth />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/oauth/custom"
+            element={
+              <Suspense fallback={<Loading></Loading>}>
+                <CustomOAuth />
               </Suspense>
             }
           />

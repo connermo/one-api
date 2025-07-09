@@ -112,6 +112,20 @@ export async function onOidcClicked(auth_url, client_id, openInNewTab = false) {
     }
 }
 
+export async function onCustomOAuthClicked(auth_url, client_id, scopes = '', openInNewTab = false) {
+    const state = await getOAuthState();
+    if (!state) return;
+    const redirect_uri = `${window.location.origin}/oauth/custom`;
+    const response_type = "code";
+    const scope = scopes || "openid profile email";
+    const url = `${auth_url}?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=${response_type}&scope=${scope}&state=${state}`;
+    if (openInNewTab) {
+        window.open(url);
+    } else {
+        window.location.href = url;
+    }
+}
+
 export function isAdmin() {
     let user = localStorage.getItem('user');
     if (!user) return false;

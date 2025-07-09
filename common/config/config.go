@@ -37,6 +37,7 @@ var PasswordRegisterEnabled = true
 var EmailVerificationEnabled = false
 var GitHubOAuthEnabled = false
 var OidcEnabled = false
+var CustomOAuthEnabled = false
 var WeChatAuthEnabled = false
 var TurnstileCheckEnabled = false
 var RegisterEnabled = true
@@ -78,6 +79,18 @@ var OidcWellKnown = ""
 var OidcAuthorizationEndpoint = ""
 var OidcTokenEndpoint = ""
 var OidcUserinfoEndpoint = ""
+
+var CustomOAuthClientId = ""
+var CustomOAuthClientSecret = ""
+var CustomOAuthProviderName = ""
+var CustomOAuthAuthorizationEndpoint = ""
+var CustomOAuthTokenEndpoint = ""
+var CustomOAuthUserinfoEndpoint = ""
+var CustomOAuthScopes = ""
+var CustomOAuthUserIdField = ""
+var CustomOAuthUsernameField = ""
+var CustomOAuthDisplayNameField = ""
+var CustomOAuthEmailField = ""
 
 var WeChatServerAddress = ""
 var WeChatServerToken = ""

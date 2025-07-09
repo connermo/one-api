@@ -26,6 +26,7 @@ import Log from './pages/Log';
 import AdminLog from './pages/Log/AdminLog';
 import Chat from './pages/Chat';
 import LarkOAuth from './components/LarkOAuth';
+import CustomOAuth from './components/CustomOAuth';
 import Dashboard from './pages/Dashboard';
 
 const Home = lazy(() => import('./pages/Home'));
@@ -252,6 +253,14 @@ function App() {
         element={
           <Suspense fallback={<Loading></Loading>}>
             <LarkOAuth />
+          </Suspense>
+        }
+      />
+      <Route
+        path='/oauth/custom'
+        element={
+          <Suspense fallback={<Loading></Loading>}>
+            <CustomOAuth />
           </Suspense>
         }
       />

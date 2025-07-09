@@ -1,12 +1,13 @@
 package model
 
 import (
-	"github.com/songquanpeng/one-api/common/config"
-	"github.com/songquanpeng/one-api/common/logger"
-	billingratio "github.com/songquanpeng/one-api/relay/billing/ratio"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/songquanpeng/one-api/common/config"
+	"github.com/songquanpeng/one-api/common/logger"
+	billingratio "github.com/songquanpeng/one-api/relay/billing/ratio"
 )
 
 type Option struct {
@@ -29,6 +30,7 @@ func InitOptionMap() {
 	config.OptionMap["EmailVerificationEnabled"] = strconv.FormatBool(config.EmailVerificationEnabled)
 	config.OptionMap["GitHubOAuthEnabled"] = strconv.FormatBool(config.GitHubOAuthEnabled)
 	config.OptionMap["OidcEnabled"] = strconv.FormatBool(config.OidcEnabled)
+	config.OptionMap["CustomOAuthEnabled"] = strconv.FormatBool(config.CustomOAuthEnabled)
 	config.OptionMap["WeChatAuthEnabled"] = strconv.FormatBool(config.WeChatAuthEnabled)
 	config.OptionMap["TurnstileCheckEnabled"] = strconv.FormatBool(config.TurnstileCheckEnabled)
 	config.OptionMap["RegisterEnabled"] = strconv.FormatBool(config.RegisterEnabled)
@@ -55,6 +57,17 @@ func InitOptionMap() {
 	config.OptionMap["ServerAddress"] = ""
 	config.OptionMap["GitHubClientId"] = ""
 	config.OptionMap["GitHubClientSecret"] = ""
+	config.OptionMap["CustomOAuthClientId"] = ""
+	config.OptionMap["CustomOAuthClientSecret"] = ""
+	config.OptionMap["CustomOAuthProviderName"] = ""
+	config.OptionMap["CustomOAuthAuthorizationEndpoint"] = ""
+	config.OptionMap["CustomOAuthTokenEndpoint"] = ""
+	config.OptionMap["CustomOAuthUserinfoEndpoint"] = ""
+	config.OptionMap["CustomOAuthScopes"] = ""
+	config.OptionMap["CustomOAuthUserIdField"] = ""
+	config.OptionMap["CustomOAuthUsernameField"] = ""
+	config.OptionMap["CustomOAuthDisplayNameField"] = ""
+	config.OptionMap["CustomOAuthEmailField"] = ""
 	config.OptionMap["WeChatServerAddress"] = ""
 	config.OptionMap["WeChatServerToken"] = ""
 	config.OptionMap["WeChatAccountQRCodeImageURL"] = ""
@@ -133,6 +146,8 @@ func updateOptionMap(key string, value string) (err error) {
 			config.GitHubOAuthEnabled = boolValue
 		case "OidcEnabled":
 			config.OidcEnabled = boolValue
+		case "CustomOAuthEnabled":
+			config.CustomOAuthEnabled = boolValue
 		case "WeChatAuthEnabled":
 			config.WeChatAuthEnabled = boolValue
 		case "TurnstileCheckEnabled":
@@ -191,6 +206,28 @@ func updateOptionMap(key string, value string) (err error) {
 		config.OidcTokenEndpoint = value
 	case "OidcUserinfoEndpoint":
 		config.OidcUserinfoEndpoint = value
+	case "CustomOAuthClientId":
+		config.CustomOAuthClientId = value
+	case "CustomOAuthClientSecret":
+		config.CustomOAuthClientSecret = value
+	case "CustomOAuthProviderName":
+		config.CustomOAuthProviderName = value
+	case "CustomOAuthAuthorizationEndpoint":
+		config.CustomOAuthAuthorizationEndpoint = value
+	case "CustomOAuthTokenEndpoint":
+		config.CustomOAuthTokenEndpoint = value
+	case "CustomOAuthUserinfoEndpoint":
+		config.CustomOAuthUserinfoEndpoint = value
+	case "CustomOAuthScopes":
+		config.CustomOAuthScopes = value
+	case "CustomOAuthUserIdField":
+		config.CustomOAuthUserIdField = value
+	case "CustomOAuthUsernameField":
+		config.CustomOAuthUsernameField = value
+	case "CustomOAuthDisplayNameField":
+		config.CustomOAuthDisplayNameField = value
+	case "CustomOAuthEmailField":
+		config.CustomOAuthEmailField = value
 	case "Footer":
 		config.Footer = value
 	case "SystemName":

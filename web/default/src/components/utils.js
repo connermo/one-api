@@ -27,3 +27,12 @@ export async function onLarkOAuthClicked(lark_client_id) {
     `https://open.feishu.cn/open-apis/authen/v1/index?redirect_uri=${redirect_uri}&app_id=${lark_client_id}&state=${state}`
   );
 }
+
+export async function onCustomOAuthClicked(auth_url, client_id, scopes = '') {
+  const state = await getOAuthState();
+  if (!state) return;
+  let redirect_uri = `${window.location.origin}/oauth/custom`;
+  let scope = scopes || 'openid profile email';
+  let url = `${auth_url}?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=${scope}&state=${state}`;
+  window.open(url);
+}
