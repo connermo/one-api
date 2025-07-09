@@ -6,6 +6,7 @@ import Loadable from 'ui-component/Loadable';
 
 const Channel = Loadable(lazy(() => import('views/Channel')));
 const Log = Loadable(lazy(() => import('views/Log')));
+const AdminLog = Loadable(lazy(() => import('views/Log/AdminLog')));
 const Redemption = Loadable(lazy(() => import('views/Redemption')));
 const Setting = Loadable(lazy(() => import('views/Setting')));
 const Token = Loadable(lazy(() => import('views/Token')));
@@ -38,6 +39,10 @@ const MainRoutes = {
     {
       path: 'log',
       element: <Log />
+    },
+    {
+      path: 'log/admin',
+      element: <AdminLog />
     },
     {
       path: 'redemption',

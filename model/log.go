@@ -249,3 +249,59 @@ func SearchLogsByDayAndModel(userId, start, end int) (LogStatistics []*LogStatis
 
 	return LogStatistics, err
 }
+
+// RecordAdminLog records admin operation logs with additional context
+func RecordAdminLog(ctx context.Context, adminUserId int, targetUserId int, action string, details string) {
+	adminUsername := GetUsernameById(adminUserId)
+	targetUsername := ""
+	if targetUserId != 0 {
+		targetUsername = GetUsernameById(targetUserId)
+	}
+
+	var content string
+	if targetUsername != "" {
+		content = fmt.Sprintf("管理员 %s 对用户 %s 执行操作: %s - %s", adminUsername, targetUsername, action, details)
+	} else {
+		content = fmt.Sprintf("管理员 %s 执行操作: %s - %s", adminUsername, action, details)
+	}
+
+	log := &Log{
+		UserId:    adminUserId,
+		Username:  adminUsername,
+		CreatedAt: helper.GetTimestamp(),
+		Type:      LogTypeManage,
+		Content:   content,
+	}
+	recordLogHelper(ctx, log)
+}
+
+// RecordAdminChannelLog records admin channel operation logs
+func RecordAdminChannelLog(ctx context.Context, adminUserId int, channelId int, action string, details string) {
+	adminUsername := GetUsernameById(adminUserId)
+	content := fmt.Sprintf("管理员 %s 对渠道 #%d 执行操作: %s - %s", adminUsername, channelId, action, details)
+
+	log := &Log{
+		UserId:    adminUserId,
+		Username:  adminUsername,
+		CreatedAt: helper.GetTimestamp(),
+		Type:      LogTypeManage,
+		Content:   content,
+		ChannelId: channelId,
+	}
+	recordLogHelper(ctx, log)
+}
+
+// RecordAdminSystemLog records admin system operation logs
+func RecordAdminSystemLog(ctx context.Context, adminUserId int, action string, details string) {
+	adminUsername := GetUsernameById(adminUserId)
+	content := fmt.Sprintf("管理员 %s 执行系统操作: %s - %s", adminUsername, action, details)
+
+	log := &Log{
+		UserId:    adminUserId,
+		Username:  adminUsername,
+		CreatedAt: helper.GetTimestamp(),
+		Type:      LogTypeManage,
+		Content:   content,
+	}
+	recordLogHelper(ctx, log)
+}

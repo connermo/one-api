@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/sessions"
@@ -419,9 +420,31 @@ func UpdateUser(c *gin.Context) {
 		})
 		return
 	}
+	adminUserId := c.GetInt(ctxkey.Id)
+	var changes []string
+
 	if originUser.Quota != updatedUser.Quota {
-		model.RecordLog(ctx, originUser.Id, model.LogTypeManage, fmt.Sprintf("管理员将用户额度从 %s修改为 %s", common.LogQuota(originUser.Quota), common.LogQuota(updatedUser.Quota)))
+		changes = append(changes, fmt.Sprintf("额度从 %s 修改为 %s", common.LogQuota(originUser.Quota), common.LogQuota(updatedUser.Quota)))
 	}
+	if originUser.Role != updatedUser.Role {
+		roleNames := map[int]string{1: "普通用户", 10: "管理员", 100: "超级管理员"}
+		changes = append(changes, fmt.Sprintf("角色从 %s 修改为 %s", roleNames[originUser.Role], roleNames[updatedUser.Role]))
+	}
+	if originUser.Status != updatedUser.Status {
+		statusNames := map[int]string{1: "启用", 2: "禁用"}
+		changes = append(changes, fmt.Sprintf("状态从 %s 修改为 %s", statusNames[originUser.Status], statusNames[updatedUser.Status]))
+	}
+	if originUser.DisplayName != updatedUser.DisplayName {
+		changes = append(changes, fmt.Sprintf("显示名称从 '%s' 修改为 '%s'", originUser.DisplayName, updatedUser.DisplayName))
+	}
+	if updatePassword {
+		changes = append(changes, "重置密码")
+	}
+
+	if len(changes) > 0 {
+		model.RecordAdminLog(ctx, adminUserId, originUser.Id, "更新用户信息", strings.Join(changes, ", "))
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
@@ -477,6 +500,7 @@ func UpdateSelf(c *gin.Context) {
 }
 
 func DeleteUser(c *gin.Context) {
+	ctx := c.Request.Context()
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -504,11 +528,21 @@ func DeleteUser(c *gin.Context) {
 	err = model.DeleteUserById(id)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
-			"success": true,
-			"message": "",
+			"success": false,
+			"message": err.Error(),
 		})
 		return
 	}
+
+	adminUserId := c.GetInt(ctxkey.Id)
+	details := fmt.Sprintf("用户名: %s, 显示名称: %s", originUser.Username, originUser.DisplayName)
+	model.RecordAdminLog(ctx, adminUserId, originUser.Id, "删除用户", details)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "",
+	})
+	return
 }
 
 func DeleteSelf(c *gin.Context) {
@@ -581,6 +615,11 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	adminUserId := c.GetInt(ctxkey.Id)
+	roleNames := map[int]string{1: "普通用户", 10: "管理员", 100: "超级管理员"}
+	details := fmt.Sprintf("用户名: %s, 显示名称: %s, 角色: %s", user.Username, user.DisplayName, roleNames[user.Role])
+	model.RecordAdminLog(ctx, adminUserId, 0, "创建用户", details)
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
@@ -595,6 +634,7 @@ type ManageRequest struct {
 
 // ManageUser Only admin user can do this
 func ManageUser(c *gin.Context) {
+	ctx := c.Request.Context()
 	var req ManageRequest
 	err := json.NewDecoder(c.Request.Body).Decode(&req)
 
@@ -625,6 +665,10 @@ func ManageUser(c *gin.Context) {
 		})
 		return
 	}
+
+	adminUserId := c.GetInt(ctxkey.Id)
+	var actionDetails string
+
 	switch req.Action {
 	case "disable":
 		user.Status = model.UserStatusDisabled
@@ -635,8 +679,10 @@ func ManageUser(c *gin.Context) {
 			})
 			return
 		}
+		actionDetails = "禁用用户"
 	case "enable":
 		user.Status = model.UserStatusEnabled
+		actionDetails = "启用用户"
 	case "delete":
 		if user.Role == model.RoleRootUser {
 			c.JSON(http.StatusOK, gin.H{
@@ -652,6 +698,18 @@ func ManageUser(c *gin.Context) {
 			})
 			return
 		}
+		actionDetails = "删除用户"
+		model.RecordAdminLog(ctx, adminUserId, user.Id, "管理用户", actionDetails)
+		clearUser := model.User{
+			Role:   user.Role,
+			Status: user.Status,
+		}
+		c.JSON(http.StatusOK, gin.H{
+			"success": true,
+			"message": "",
+			"data":    clearUser,
+		})
+		return
 	case "promote":
 		if myRole != model.RoleRootUser {
 			c.JSON(http.StatusOK, gin.H{
@@ -668,6 +726,7 @@ func ManageUser(c *gin.Context) {
 			return
 		}
 		user.Role = model.RoleAdminUser
+		actionDetails = "提升为管理员"
 	case "demote":
 		if user.Role == model.RoleRootUser {
 			c.JSON(http.StatusOK, gin.H{
@@ -684,6 +743,7 @@ func ManageUser(c *gin.Context) {
 			return
 		}
 		user.Role = model.RoleCommonUser
+		actionDetails = "降级为普通用户"
 	}
 
 	if err := user.Update(false); err != nil {
@@ -693,6 +753,9 @@ func ManageUser(c *gin.Context) {
 		})
 		return
 	}
+
+	model.RecordAdminLog(ctx, adminUserId, user.Id, "管理用户", actionDetails)
+
 	clearUser := model.User{
 		Role:   user.Role,
 		Status: user.Status,
@@ -808,6 +871,13 @@ func AdminTopUp(c *gin.Context) {
 		req.Remark = fmt.Sprintf("通过 API 充值 %s", common.LogQuota(int64(req.Quota)))
 	}
 	model.RecordTopupLog(ctx, req.UserId, req.Remark, req.Quota)
+
+	// Record admin operation log
+	adminUserId := c.GetInt(ctxkey.Id)
+	targetUser, _ := model.GetUserById(req.UserId, false)
+	details := fmt.Sprintf("为用户 %s 充值 %s，备注: %s", targetUser.Username, common.LogQuota(int64(req.Quota)), req.Remark)
+	model.RecordAdminLog(ctx, adminUserId, req.UserId, "管理员充值", details)
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",

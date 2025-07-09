@@ -1,14 +1,16 @@
 package controller
 
 import (
+	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/songquanpeng/one-api/common/config"
 	"github.com/songquanpeng/one-api/common/ctxkey"
 	"github.com/songquanpeng/one-api/common/helper"
 	"github.com/songquanpeng/one-api/common/random"
 	"github.com/songquanpeng/one-api/model"
-	"net/http"
-	"strconv"
 )
 
 func GetAllRedemptions(c *gin.Context) {
@@ -76,6 +78,7 @@ func GetRedemption(c *gin.Context) {
 }
 
 func AddRedemption(c *gin.Context) {
+	ctx := c.Request.Context()
 	redemption := model.Redemption{}
 	err := c.ShouldBindJSON(&redemption)
 	if err != nil {
@@ -127,6 +130,11 @@ func AddRedemption(c *gin.Context) {
 		}
 		keys = append(keys, key)
 	}
+
+	adminUserId := c.GetInt(ctxkey.Id)
+	details := fmt.Sprintf("名称: %s, 数量: %d, 每个额度: %d", redemption.Name, redemption.Count, redemption.Quota)
+	model.RecordAdminSystemLog(ctx, adminUserId, "创建兑换码", details)
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",
@@ -136,8 +144,11 @@ func AddRedemption(c *gin.Context) {
 }
 
 func DeleteRedemption(c *gin.Context) {
+	ctx := c.Request.Context()
 	id, _ := strconv.Atoi(c.Param("id"))
-	err := model.DeleteRedemptionById(id)
+
+	// Get redemption info before deletion for logging
+	originalRedemption, err := model.GetRedemptionById(id)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"success": false,
@@ -145,6 +156,21 @@ func DeleteRedemption(c *gin.Context) {
 		})
 		return
 	}
+
+	err = model.DeleteRedemptionById(id)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"success": false,
+			"message": err.Error(),
+		})
+		return
+	}
+
+	adminUserId := c.GetInt(ctxkey.Id)
+	statusNames := map[int]string{1: "未使用", 2: "已使用", 3: "已禁用"}
+	details := fmt.Sprintf("名称: %s, 额度: %d, 状态: %s", originalRedemption.Name, originalRedemption.Quota, statusNames[originalRedemption.Status])
+	model.RecordAdminSystemLog(ctx, adminUserId, "删除兑换码", details)
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",

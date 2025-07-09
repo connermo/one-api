@@ -19,6 +19,7 @@ import EditChannel from './pages/Channel/EditChannel';
 import Redemption from './pages/Redemption';
 import TopUp from './pages/TopUp';
 import Log from './pages/Log';
+import AdminLog from './pages/Log/AdminLog';
 import Chat from './pages/Chat';
 import { Layout } from '@douyinfe/semi-ui';
 import Midjourney from './pages/Midjourney';
@@ -195,6 +196,14 @@ function App() {
             element={
               <PrivateRoute>
                 <Log />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/log/admin"
+            element={
+              <PrivateRoute>
+                <AdminLog />
               </PrivateRoute>
             }
           />

@@ -62,6 +62,12 @@ let headerButtons = [
     icon: 'book',
   },
   {
+    name: 'header.admin_log',
+    to: '/log/admin',
+    icon: 'shield',
+    admin: true,
+  },
+  {
     name: 'header.setting',
     to: '/setting',
     icon: 'setting',

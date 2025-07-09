@@ -8,11 +8,12 @@ import {
   IconKey,
   IconGardenCart,
   IconUser,
-  IconUserScan
+  IconUserScan,
+  IconShield
 } from '@tabler/icons-react';
 
 // constant
-const icons = { IconDashboard, IconSitemap, IconArticle, IconCoin, IconAdjustments, IconKey, IconGardenCart, IconUser, IconUserScan };
+const icons = { IconDashboard, IconSitemap, IconArticle, IconCoin, IconAdjustments, IconKey, IconGardenCart, IconUser, IconUserScan, IconShield };
 
 // ==============================|| DASHBOARD MENU ITEMS ||============================== //
 
@@ -53,6 +54,15 @@ const panel = {
       url: '/panel/log',
       icon: icons.IconArticle,
       breadcrumbs: false
+    },
+    {
+      id: 'admin_log',
+      title: '管理员日志',
+      type: 'item',
+      url: '/panel/log/admin',
+      icon: icons.IconShield,
+      breadcrumbs: false,
+      isAdmin: true
     },
     {
       id: 'redemption',

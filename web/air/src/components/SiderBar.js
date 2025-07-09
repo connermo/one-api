@@ -17,7 +17,8 @@ import {
   IconKey,
   IconLayers,
   IconSetting,
-  IconUser
+  IconUser,
+  IconShield
 } from '@douyinfe/semi-icons';
 import { Layout, Nav } from '@douyinfe/semi-ui';
 
@@ -86,6 +87,13 @@ const SiderBar = () => {
       itemKey: 'log',
       to: '/log',
       icon: <IconHistogram />
+    },
+    {
+      text: '管理员日志',
+      itemKey: 'admin_log',
+      to: '/log/admin',
+      icon: <IconShield />,
+      className: isAdmin() ? 'semi-navigation-item-normal' : 'tableHiddle'
     },
     {
       text: '数据看板',
@@ -174,6 +182,7 @@ const SiderBar = () => {
                 topup: '/topup',
                 user: '/user',
                 log: '/log',
+                admin_log: '/log/admin',
                 midjourney: '/midjourney',
                 setting: '/setting',
                 about: '/about',

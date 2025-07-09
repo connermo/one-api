@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/songquanpeng/one-api/common/config"
+	"github.com/songquanpeng/one-api/common/ctxkey"
 	"github.com/songquanpeng/one-api/common/helper"
 	"github.com/songquanpeng/one-api/common/i18n"
 	"github.com/songquanpeng/one-api/model"
@@ -35,6 +36,7 @@ func GetOptions(c *gin.Context) {
 }
 
 func UpdateOption(c *gin.Context) {
+	ctx := c.Request.Context()
 	var option model.Option
 	err := json.NewDecoder(c.Request.Body).Decode(&option)
 	if err != nil {
@@ -44,6 +46,15 @@ func UpdateOption(c *gin.Context) {
 		})
 		return
 	}
+
+	// Get original value for logging
+	var originalValue string
+	config.OptionMapRWMutex.RLock()
+	if v, ok := config.OptionMap[option.Key]; ok {
+		originalValue = helper.Interface2String(v)
+	}
+	config.OptionMapRWMutex.RUnlock()
+
 	switch option.Key {
 	case "Theme":
 		if !config.ValidThemes[option.Value] {
@@ -86,6 +97,7 @@ func UpdateOption(c *gin.Context) {
 			return
 		}
 	}
+
 	err = model.UpdateOption(option.Key, option.Value)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -94,6 +106,26 @@ func UpdateOption(c *gin.Context) {
 		})
 		return
 	}
+
+	// Record admin operation log
+	adminUserId := c.GetInt(ctxkey.Id)
+	details := ""
+	if originalValue != option.Value {
+		// Mask sensitive values
+		displayOriginal := originalValue
+		displayNew := option.Value
+		if strings.Contains(strings.ToLower(option.Key), "token") ||
+			strings.Contains(strings.ToLower(option.Key), "secret") ||
+			strings.Contains(strings.ToLower(option.Key), "key") {
+			displayOriginal = "***"
+			displayNew = "***"
+		}
+		details = "配置项: " + option.Key + ", 从 '" + displayOriginal + "' 修改为 '" + displayNew + "'"
+	} else {
+		details = "配置项: " + option.Key + ", 值保持为 '" + option.Value + "'"
+	}
+	model.RecordAdminSystemLog(ctx, adminUserId, "更新系统配置", details)
+
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,
 		"message": "",

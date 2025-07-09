@@ -23,6 +23,7 @@ import Redemption from './pages/Redemption';
 import EditRedemption from './pages/Redemption/EditRedemption';
 import TopUp from './pages/TopUp';
 import Log from './pages/Log';
+import AdminLog from './pages/Log/AdminLog';
 import Chat from './pages/Chat';
 import LarkOAuth from './components/LarkOAuth';
 import Dashboard from './pages/Dashboard';
@@ -279,6 +280,14 @@ function App() {
         element={
           <PrivateRoute>
             <Log />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path='/log/admin'
+        element={
+          <PrivateRoute>
+            <AdminLog />
           </PrivateRoute>
         }
       />
