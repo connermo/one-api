@@ -19,7 +19,7 @@ try:
     from sqlalchemy.exc import SQLAlchemyError
 except ImportError as e:
     print(f"缺少必要的依赖包: {e}")
-    print("请安装依赖: pip install pymysql psycopg2-binary pandas sqlalchemy")
+    print("请安装依赖: pip install pymysql psycopg2-binary pandas sqlalchemy openpyxl")
     sys.exit(1)
 
 
@@ -287,6 +287,78 @@ def format_number(num):
         return str(int(num))
 
 
+def export_to_excel(dfs_dict: dict, filename: str):
+    """导出多个DataFrame到Excel文件的不同工作表"""
+    try:
+        with pd.ExcelWriter(filename, engine='openpyxl') as writer:
+            for sheet_name, df in dfs_dict.items():
+                if not df.empty:
+                    # 创建一个包含中文列名的DataFrame副本
+                    df_export = df.copy()
+                    
+                    # 重命名列为中文
+                    column_mapping = {
+                        'model_name': '模型名称',
+                        'call_count': '调用次数',
+                        'total_prompt_tokens': 'Prompt Token',
+                        'total_completion_tokens': 'Completion Token',
+                        'total_tokens': '总Token数',
+                        'total_quota': '消耗配额',
+                        'avg_elapsed_time': '平均响应时间(ms)',
+                        'date': '日期',
+                        'username': '用户名',
+                        'unique_models': '使用模型数'
+                    }
+                    
+                    df_export = df_export.rename(columns=column_mapping)
+                    df_export.to_excel(writer, sheet_name=sheet_name, index=False)
+                    
+                    # 获取工作表并调整列宽
+                    worksheet = writer.sheets[sheet_name]
+                    for column in worksheet.columns:
+                        max_length = 0
+                        column_letter = column[0].column_letter
+                        for cell in column:
+                            try:
+                                if len(str(cell.value)) > max_length:
+                                    max_length = len(str(cell.value))
+                            except:
+                                pass
+                        adjusted_width = min(max_length + 2, 50)
+                        worksheet.column_dimensions[column_letter].width = adjusted_width
+        
+        print(f"数据已导出到Excel文件: {filename}")
+        return True
+    except Exception as e:
+        print(f"导出Excel文件失败: {e}")
+        return False
+
+
+def export_data(df: pd.DataFrame, filename: str, sheet_name: str = "Sheet1"):
+    """导出数据到文件（支持CSV和Excel格式）"""
+    if df.empty:
+        print("没有数据可导出")
+        return False
+    
+    try:
+        if filename.lower().endswith('.xlsx'):
+            # Excel格式
+            export_to_excel({sheet_name: df}, filename)
+        elif filename.lower().endswith('.csv'):
+            # CSV格式
+            df.to_csv(filename, index=False, encoding='utf-8-sig')
+            print(f"数据已导出到CSV文件: {filename}")
+        else:
+            # 默认使用Excel格式
+            if not filename.endswith('.xlsx'):
+                filename += '.xlsx'
+            export_to_excel({sheet_name: df}, filename)
+        return True
+    except Exception as e:
+        print(f"导出文件失败: {e}")
+        return False
+
+
 def print_stats_table(df: pd.DataFrame, title: str):
     """打印统计表格"""
     if df.empty:
@@ -331,7 +403,8 @@ def main():
     parser.add_argument('--daily', action='store_true', help='显示按日期分组的统计')
     parser.add_argument('--users', action='store_true', help='显示用户统计')
     parser.add_argument('--db-url', help='数据库连接URL')
-    parser.add_argument('--export', help='导出到CSV文件')
+    parser.add_argument('--export', help='导出文件路径（支持.csv和.xlsx格式）')
+    parser.add_argument('--report', help='生成综合Excel报告文件路径')
     
     args = parser.parse_args()
     
@@ -361,9 +434,14 @@ def main():
             print_stats_table(df, "按日期分组的模型统计")
             
             if args.export and not df.empty:
-                export_file = args.export.replace('.csv', '_daily.csv')
-                df.to_csv(export_file, index=False, encoding='utf-8-sig')
-                print(f"数据已导出到: {export_file}")
+                # 根据原始文件扩展名确定导出格式
+                if args.export.lower().endswith('.xlsx'):
+                    export_file = args.export.replace('.xlsx', '_daily.xlsx')
+                elif args.export.lower().endswith('.csv'):
+                    export_file = args.export.replace('.csv', '_daily.csv')
+                else:
+                    export_file = args.export + '_daily.xlsx'
+                export_data(df, export_file, "按日期统计")
                 
         elif args.users:
             # 显示用户统计
@@ -371,9 +449,14 @@ def main():
             print_stats_table(df, "用户统计")
             
             if args.export and not df.empty:
-                export_file = args.export.replace('.csv', '_users.csv')
-                df.to_csv(export_file, index=False, encoding='utf-8-sig')
-                print(f"数据已导出到: {export_file}")
+                # 根据原始文件扩展名确定导出格式
+                if args.export.lower().endswith('.xlsx'):
+                    export_file = args.export.replace('.xlsx', '_users.xlsx')
+                elif args.export.lower().endswith('.csv'):
+                    export_file = args.export.replace('.csv', '_users.csv')
+                else:
+                    export_file = args.export + '_users.xlsx'
+                export_data(df, export_file, "用户统计")
                 
         else:
             # 显示模型统计
@@ -381,8 +464,37 @@ def main():
             print_stats_table(df, "模型统计")
             
             if args.export and not df.empty:
-                df.to_csv(args.export, index=False, encoding='utf-8-sig')
-                print(f"数据已导出到: {args.export}")
+                export_data(df, args.export, "模型统计")
+        
+        # 生成综合报告
+        if args.report:
+            print("\n正在生成综合报告...")
+            report_data = {}
+            
+            # 获取模型统计
+            model_stats = analyzer.get_model_stats(args.start_date, args.end_date, args.model, args.user)
+            if not model_stats.empty:
+                report_data["模型统计"] = model_stats
+            
+            # 获取按日期分组的统计
+            daily_stats = analyzer.get_daily_stats(args.start_date, args.end_date, args.model)
+            if not daily_stats.empty:
+                report_data["按日期统计"] = daily_stats
+            
+            # 获取用户统计（如果没有指定特定用户）
+            if not args.user:
+                user_stats = analyzer.get_user_stats(args.start_date, args.end_date)
+                if not user_stats.empty:
+                    report_data["用户统计"] = user_stats
+            
+            if report_data:
+                # 确保文件扩展名为.xlsx
+                report_file = args.report
+                if not report_file.lower().endswith('.xlsx'):
+                    report_file += '.xlsx'
+                export_to_excel(report_data, report_file)
+            else:
+                print("没有数据可生成报告")
         
     except KeyboardInterrupt:
         print("\n操作被用户取消")
